@@ -135,6 +135,23 @@ jobs:
               git remote set-url origin "$REPO_URL"
             fi
 
+            # 3b) Environment file. .env is gitignored, so it is never part
+            #     of the checkout and must already live on the server. It is
+            #     commonly uploaded to the account home by mistake (that is
+            #     where a file manager opens), so adopt it from there once.
+            #     NEXT_PUBLIC_* values are inlined at BUILD time, so this has
+            #     to happen before npm run build below, not after.
+            if [ ! -f "$DEPLOY_PATH/.env" ] && [ -f "$HOME/.env" ]; then
+              echo "Adopting $HOME/.env into $DEPLOY_PATH/.env"
+              cp -p "$HOME/.env" "$DEPLOY_PATH/.env"
+              chmod 600 "$DEPLOY_PATH/.env"
+            fi
+            if [ -f "$DEPLOY_PATH/.env" ]; then
+              echo "env file present: $(grep -cE '^[A-Za-z0-9_]+=' "$DEPLOY_PATH/.env") variables set"
+            else
+              echo "::warning::No .env found at $DEPLOY_PATH/.env - the app will build in demo mode (no Supabase, no DeepSeek, no Razorpay)."
+            fi
+
             # 4) Keep the tracked demo seed clean so checkout can never abort.
             #    Live demo rows belong in calibiai_db.runtime.json (gitignored).
             if [ -f calibiai_db.json ] && [ ! -f calibiai_db.runtime.json ]; then
