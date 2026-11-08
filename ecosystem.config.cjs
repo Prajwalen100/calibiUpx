@@ -19,9 +19,11 @@
 module.exports = {
   apps: [
     {
-      name: 'calibiai',
+      // Name and port come from the environment so that several apps can
+      // share one hosting account without colliding on either.
+      name: process.env.PM2_APP_NAME || 'calibiupx',
       script: 'node_modules/next/dist/bin/next',
-      args: 'start -p 3000 -H 0.0.0.0',
+      args: `start -p ${process.env.PORT || 3000} -H 0.0.0.0`,
       cwd: __dirname,
       instances: process.env.WEB_CONCURRENCY ? parseInt(process.env.WEB_CONCURRENCY, 10) : 'max',
       exec_mode: 'cluster',

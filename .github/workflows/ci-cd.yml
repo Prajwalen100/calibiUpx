@@ -60,7 +60,7 @@ jobs:
   #   SSH_PORT      22            (optional, defaults to 22)
   # Optional repository variables:
   #   DEPLOY_PATH   defaults to $HOME/calibiUpx
-  #   APP_PORT      defaults to 3000
+  #   APP_PORT      defaults to 3001 (3000 belongs to CalibiAiRevamp)
   # ---------------------------------------------------------------------------
   deploy:
     name: Deploy to server via SSH
@@ -103,7 +103,10 @@ jobs:
           set -euo pipefail
 
           DEPLOY_PATH="${DEPLOY_PATH:-\$HOME/calibiUpx}"
-          APP_PORT="${APP_PORT:-3000}"
+          # 3000 is taken by CalibiAiRevamp, which shares this hosting
+          # account on another domain. Default this app to 3001; override
+          # with the APP_PORT repository variable.
+          APP_PORT="${APP_PORT:-3001}"
           REPO_URL="https://github.com/${{ github.repository }}.git"
           BRANCH="${{ github.ref_name }}"
 

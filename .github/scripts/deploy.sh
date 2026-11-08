@@ -123,16 +123,52 @@ rm -rf .next/cache/fetch-cache || true
 
 npm run build
 
-# 6) Restart: kill the old server and let the host's supervisor respawn it
-#    against the new build. The [ ] trick stops these patterns matching this
-#    script itself.
-pkill -f "next-serve[r]" || true
-pkill -f "nex[t] start" || true
-mkdir -p tmp && touch tmp/restart.txt || true
-sleep 5
-CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://localhost:$APP_PORT/" || true)
-echo "App HTTP status after restart: ${CODE:-000}"
+# 6) Restart. This hosting account runs MORE THAN ONE app (calibiUpx and
+#    CalibiAiRevamp share it on different domains), so a blanket
+#    `pkill -f "next start"` would take the neighbour down too. Everything
+#    below is scoped to this app only: a pidfile we own, or a uniquely named
+#    PM2 process.
+export PORT="$APP_PORT"
+export PM2_APP_NAME="${PM2_APP_NAME:-calibiupx}"
+mkdir -p tmp logs
+
+if command -v pm2 >/dev/null 2>&1; then
+  echo "Restarting via PM2 as '$PM2_APP_NAME' on port $PORT"
+  pm2 startOrReload ecosystem.config.cjs --update-env
+  pm2 save >/dev/null 2>&1 || true
+else
+  # Stop only the process this script started last time.
+  if [ -f tmp/app.pid ]; then
+    OLD_PID="$(cat tmp/app.pid 2>/dev/null || true)"
+    if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null; then
+      echo "Stopping previous instance (pid $OLD_PID)"
+      kill "$OLD_PID" 2>/dev/null || true
+      sleep 3
+      kill -9 "$OLD_PID" 2>/dev/null || true
+    fi
+  fi
+  echo "Starting app on port $PORT"
+  nohup npm start > logs/app.log 2>&1 &
+  echo $! > tmp/app.pid
+  disown 2>/dev/null || true
+fi
+
+# Passenger/LiteSpeed app managers watch this file and respawn on touch.
+touch tmp/restart.txt || true
+
+# 7) Health probe.
+sleep 8
+CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "http://127.0.0.1:$APP_PORT/" || true)
+echo "App HTTP status on 127.0.0.1:$APP_PORT -> ${CODE:-000}"
 case "$CODE" in
-  2*|3*) echo "Deploy OK - app answering on port $APP_PORT" ;;
-  *) echo "WARNING: app did not answer with 2xx/3xx (got ${CODE:-000}) on port $APP_PORT." ;;
+  2*|3*)
+    echo "Deploy OK - app is serving on port $APP_PORT"
+    ;;
+  *)
+    echo "App did not answer on port $APP_PORT (got ${CODE:-000}). Last log lines:"
+    tail -40 logs/app.log 2>/dev/null || echo "(no logs/app.log)"
+    echo "NOTE: the app may still need registering in the hosting panel so the"
+    echo "      web server forwards this domain to port $APP_PORT."
+    exit 1
+    ;;
 esac
