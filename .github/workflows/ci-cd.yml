@@ -81,7 +81,10 @@ jobs:
 
       - name: Deploy
         uses: appleboy/ssh-action@v1.2.2
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         with:
+          envs: GH_PAT
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
@@ -98,17 +101,41 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-            # 2) The checkout must already exist on the server. We do not clone
-            #    here: a private repo would need credentials on the box, which
-            #    is a one-time manual setup step (see repo README / handover).
-            if [ ! -d "$DEPLOY_PATH/.git" ]; then
-              echo "ERROR: $DEPLOY_PATH is not a git checkout."
-              echo "Clone the repo there once, then re-run this workflow."
+            # 2) Git credentials. The repo is private, so BOTH the first
+            #    clone and every later fetch need auth. We never persist a
+            #    token on the server: it is written to a 0600 credential file
+            #    that is deleted again before this script exits, and it is
+            #    never passed on a command line (argv is world-readable via
+            #    `ps` on shared hosting).
+            if [ -z "$GH_PAT" ]; then
+              echo "::error::GH_PAT secret is not set - cannot reach the private repo."
               exit 1
             fi
-            cd "$DEPLOY_PATH"
+            CRED_FILE="$HOME/.git-credentials-ci.$$"
+            trap 'rm -f "$CRED_FILE"' EXIT INT TERM
+            umask 077
+            printf 'https://x-access-token:%s@github.com\n' "$GH_PAT" > "$CRED_FILE"
+            REPO_URL="https://github.com/${{ github.repository }}.git"
 
-            # 3) Keep the tracked demo seed clean so checkout can never abort.
+            # 3) Bootstrap the checkout on first run, then keep it in sync.
+            if [ ! -d "$DEPLOY_PATH/.git" ]; then
+              echo "No checkout at $DEPLOY_PATH - cloning for the first time."
+              mkdir -p "$DEPLOY_PATH"
+              # Clone into the directory even if it already holds files
+              # (e.g. an .env you uploaded ahead of the first deploy).
+              git -c credential.helper="store --file=$CRED_FILE" \
+                clone "$REPO_URL" "$DEPLOY_PATH.tmp.$$"
+              mv "$DEPLOY_PATH.tmp.$$/.git" "$DEPLOY_PATH/.git"
+              rm -rf "$DEPLOY_PATH.tmp.$$"
+              cd "$DEPLOY_PATH"
+              git remote set-url origin "$REPO_URL"
+              git reset --hard HEAD
+            else
+              cd "$DEPLOY_PATH"
+              git remote set-url origin "$REPO_URL"
+            fi
+
+            # 4) Keep the tracked demo seed clean so checkout can never abort.
             #    Live demo rows belong in calibiai_db.runtime.json (gitignored).
             if [ -f calibiai_db.json ] && [ ! -f calibiai_db.runtime.json ]; then
               cp -f calibiai_db.json calibiai_db.runtime.json || true
@@ -116,10 +143,14 @@ jobs:
             git checkout -- calibiai_db.json 2>/dev/null || true
 
             BRANCH="${{ github.ref_name }}"
-            git fetch origin
+            git -c credential.helper="store --file=$CRED_FILE" fetch origin
             git checkout -B "$BRANCH" "origin/$BRANCH"
 
-            # 4) Install deps (dev deps are REQUIRED to build Next.js) + build.
+            # Token file is no longer needed; drop it immediately rather than
+            # waiting for the EXIT trap, so it is absent during the long build.
+            rm -f "$CRED_FILE"
+
+            # 5) Install deps (dev deps are REQUIRED to build Next.js) + build.
             npm ci --include=dev
 
             # Drop Next.js's persistent fetch Data Cache. A production build
@@ -132,7 +163,7 @@ jobs:
 
             npm run build
 
-            # 5) Restart: kill the old server and let the host's "persistent
+            # 6) Restart: kill the old server and let the host's "persistent
             #    app" supervisor respawn it against the new build.
             #    The [ ] trick stops these patterns matching this script itself.
             pkill -f "next-serve[r]" || true
