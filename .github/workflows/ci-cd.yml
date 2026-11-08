@@ -101,6 +101,38 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
+            # 1b) Server survey. Prints how this account is wired up so the
+            #     serving layer (which app root the host actually runs, which
+            #     port, Passenger vs a plain node process) can be matched
+            #     without guessing. Never prints any secret VALUES - only the
+            #     variable names from .env. Entirely non-fatal.
+            set +e   # the survey must never fail the deploy
+            echo "===== SERVER SURVEY (start) ====="
+            echo "--- identity ---"
+            whoami; echo "HOME=$HOME"
+            echo "--- node toolchain ---"
+            command -v node >/dev/null && node -v || echo "node: NOT FOUND"
+            command -v npm  >/dev/null && npm -v  || echo "npm: NOT FOUND"
+            command -v pm2  >/dev/null && echo "pm2: present" || echo "pm2: absent"
+            echo "--- home contents ---"
+            ls -la "$HOME" 2>/dev/null | head -30
+            echo "--- public_html ---"
+            ls -la "$HOME/public_html" 2>/dev/null | head -20 || echo "no public_html"
+            echo "--- cPanel/Passenger node app roots (nodevenv) ---"
+            ls -la "$HOME/nodevenv" 2>/dev/null || echo "no ~/nodevenv"
+            echo "--- .htaccess (Passenger directives reveal the app root) ---"
+            for f in "$HOME/public_html/.htaccess" "$HOME/.htaccess"; do
+              [ -f "$f" ] && { echo "== $f =="; head -40 "$f"; }
+            done
+            echo "--- existing node processes ---"
+            ps -eo pid,etime,cmd 2>/dev/null | grep -i "[n]ode" | head -15 || echo "none"
+            echo "--- listening ports ---"
+            { ss -ltnp 2>/dev/null || netstat -ltnp 2>/dev/null; } | head -20 || echo "unavailable"
+            echo "--- env var NAMES present in \$HOME/.env (no values) ---"
+            [ -f "$HOME/.env" ] && grep -oE "^[A-Za-z0-9_]+" "$HOME/.env" | sort || echo "no $HOME/.env"
+            echo "===== SERVER SURVEY (end) ====="
+            set -e
+
             # 2) Git credentials. The repo is private, so BOTH the first
             #    clone and every later fetch need auth. We never persist a
             #    token on the server: it is written to a 0600 credential file
