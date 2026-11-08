@@ -79,149 +79,51 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy
-        uses: appleboy/ssh-action@v1.2.2
+      - uses: actions/checkout@v4
+
+      - name: Install sshpass
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+
+      # The remote work lives in .github/scripts/deploy.sh and is piped in over
+      # stdin. We drive ssh directly instead of appleboy/ssh-action: that action
+      # downloads a drone-ssh binary from GitHub releases on every run, and that
+      # download returned 504 and failed the deploy before a single command ran.
+      # Plain ssh has no such moving part, and the password never reaches argv
+      # (sshpass -e reads it from SSHPASS).
+      - name: Deploy over SSH
         env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_PORT: ${{ secrets.SSH_PORT || 22 }}
           GH_PAT: ${{ secrets.GH_PAT }}
-        with:
-          envs: GH_PAT
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          script: |
-            set -e
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          APP_PORT: ${{ vars.APP_PORT }}
+        run: |
+          set -euo pipefail
 
-            DEPLOY_PATH="${{ vars.DEPLOY_PATH || '' }}"
-            [ -n "$DEPLOY_PATH" ] || DEPLOY_PATH="$HOME/calibiUpx"
-            APP_PORT="${{ vars.APP_PORT || '' }}"
-            [ -n "$APP_PORT" ] || APP_PORT=3000
+          DEPLOY_PATH="${DEPLOY_PATH:-\$HOME/calibiUpx}"
+          APP_PORT="${APP_PORT:-3000}"
+          REPO_URL="https://github.com/${{ github.repository }}.git"
+          BRANCH="${{ github.ref_name }}"
 
-            # 1) Load Node (nvm) - required in non-interactive shells.
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          # Prelude exports the variables inside the remote shell, so no secret
+          # is ever visible in the remote process list.
+          {
+            printf 'export GH_PAT=%q\n'      "$GH_PAT"
+            printf 'export REPO_URL=%q\n'    "$REPO_URL"
+            printf 'export BRANCH=%q\n'      "$BRANCH"
+            printf 'export DEPLOY_PATH=%s\n' "$DEPLOY_PATH"
+            printf 'export APP_PORT=%q\n'    "$APP_PORT"
+            cat .github/scripts/deploy.sh
+          } > /tmp/remote-deploy.sh
 
-            # 1b) Server survey. Prints how this account is wired up so the
-            #     serving layer (which app root the host actually runs, which
-            #     port, Passenger vs a plain node process) can be matched
-            #     without guessing. Never prints any secret VALUES - only the
-            #     variable names from .env. Entirely non-fatal.
-            set +e   # the survey must never fail the deploy
-            echo "===== SERVER SURVEY (start) ====="
-            echo "--- identity ---"
-            whoami; echo "HOME=$HOME"
-            echo "--- node toolchain ---"
-            command -v node >/dev/null && node -v || echo "node: NOT FOUND"
-            command -v npm  >/dev/null && npm -v  || echo "npm: NOT FOUND"
-            command -v pm2  >/dev/null && echo "pm2: present" || echo "pm2: absent"
-            echo "--- home contents ---"
-            ls -la "$HOME" 2>/dev/null | head -30
-            echo "--- public_html ---"
-            ls -la "$HOME/public_html" 2>/dev/null | head -20 || echo "no public_html"
-            echo "--- cPanel/Passenger node app roots (nodevenv) ---"
-            ls -la "$HOME/nodevenv" 2>/dev/null || echo "no ~/nodevenv"
-            echo "--- .htaccess (Passenger directives reveal the app root) ---"
-            for f in "$HOME/public_html/.htaccess" "$HOME/.htaccess"; do
-              [ -f "$f" ] && { echo "== $f =="; head -40 "$f"; }
-            done
-            echo "--- existing node processes ---"
-            ps -eo pid,etime,cmd 2>/dev/null | grep -i "[n]ode" | head -15 || echo "none"
-            echo "--- listening ports ---"
-            { ss -ltnp 2>/dev/null || netstat -ltnp 2>/dev/null; } | head -20 || echo "unavailable"
-            echo "--- env var NAMES present in \$HOME/.env (no values) ---"
-            [ -f "$HOME/.env" ] && grep -oE "^[A-Za-z0-9_]+" "$HOME/.env" | sort || echo "no $HOME/.env"
-            echo "===== SERVER SURVEY (end) ====="
-            set -e
-
-            # 2) Git credentials. The repo is private, so BOTH the first
-            #    clone and every later fetch need auth. We never persist a
-            #    token on the server: it is written to a 0600 credential file
-            #    that is deleted again before this script exits, and it is
-            #    never passed on a command line (argv is world-readable via
-            #    `ps` on shared hosting).
-            if [ -z "$GH_PAT" ]; then
-              echo "::error::GH_PAT secret is not set - cannot reach the private repo."
-              exit 1
-            fi
-            CRED_FILE="$HOME/.git-credentials-ci.$$"
-            trap 'rm -f "$CRED_FILE"' EXIT INT TERM
-            umask 077
-            printf 'https://x-access-token:%s@github.com\n' "$GH_PAT" > "$CRED_FILE"
-            REPO_URL="https://github.com/${{ github.repository }}.git"
-
-            # 3) Bootstrap the checkout on first run, then keep it in sync.
-            if [ ! -d "$DEPLOY_PATH/.git" ]; then
-              echo "No checkout at $DEPLOY_PATH - cloning for the first time."
-              mkdir -p "$DEPLOY_PATH"
-              # Clone into the directory even if it already holds files
-              # (e.g. an .env you uploaded ahead of the first deploy).
-              git -c credential.helper="store --file=$CRED_FILE" \
-                clone "$REPO_URL" "$DEPLOY_PATH.tmp.$$"
-              mv "$DEPLOY_PATH.tmp.$$/.git" "$DEPLOY_PATH/.git"
-              rm -rf "$DEPLOY_PATH.tmp.$$"
-              cd "$DEPLOY_PATH"
-              git remote set-url origin "$REPO_URL"
-              git reset --hard HEAD
-            else
-              cd "$DEPLOY_PATH"
-              git remote set-url origin "$REPO_URL"
-            fi
-
-            # 3b) Environment file. .env is gitignored, so it is never part
-            #     of the checkout and must already live on the server. It is
-            #     commonly uploaded to the account home by mistake (that is
-            #     where a file manager opens), so adopt it from there once.
-            #     NEXT_PUBLIC_* values are inlined at BUILD time, so this has
-            #     to happen before npm run build below, not after.
-            if [ ! -f "$DEPLOY_PATH/.env" ] && [ -f "$HOME/.env" ]; then
-              echo "Adopting $HOME/.env into $DEPLOY_PATH/.env"
-              cp -p "$HOME/.env" "$DEPLOY_PATH/.env"
-              chmod 600 "$DEPLOY_PATH/.env"
-            fi
-            if [ -f "$DEPLOY_PATH/.env" ]; then
-              echo "env file present: $(grep -cE '^[A-Za-z0-9_]+=' "$DEPLOY_PATH/.env") variables set"
-            else
-              echo "::warning::No .env found at $DEPLOY_PATH/.env - the app will build in demo mode (no Supabase, no DeepSeek, no Razorpay)."
-            fi
-
-            # 4) Keep the tracked demo seed clean so checkout can never abort.
-            #    Live demo rows belong in calibiai_db.runtime.json (gitignored).
-            if [ -f calibiai_db.json ] && [ ! -f calibiai_db.runtime.json ]; then
-              cp -f calibiai_db.json calibiai_db.runtime.json || true
-            fi
-            git checkout -- calibiai_db.json 2>/dev/null || true
-
-            BRANCH="${{ github.ref_name }}"
-            git -c credential.helper="store --file=$CRED_FILE" fetch origin
-            git checkout -B "$BRANCH" "origin/$BRANCH"
-
-            # Token file is no longer needed; drop it immediately rather than
-            # waiting for the EXIT trap, so it is absent during the long build.
-            rm -f "$CRED_FILE"
-
-            # 5) Install deps (dev deps are REQUIRED to build Next.js) + build.
-            npm ci --include=dev
-
-            # Drop Next.js's persistent fetch Data Cache. A production build
-            # wraps global fetch in a caching one, so server-side GETs (Supabase
-            # REST + Auth included) were written here with a one-year revalidate
-            # and replayed from disk - which is why a redeploy never cleared a
-            # stale read. Only the fetch cache goes; webpack/swc caches stay so
-            # the build remains fast.
-            rm -rf .next/cache/fetch-cache || true
-
-            npm run build
-
-            # 6) Restart: kill the old server and let the host's "persistent
-            #    app" supervisor respawn it against the new build.
-            #    The [ ] trick stops these patterns matching this script itself.
-            pkill -f "next-serve[r]" || true
-            pkill -f "nex[t] start" || true
-            mkdir -p tmp && touch tmp/restart.txt || true
-            sleep 5
-            CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://localhost:$APP_PORT/" || true)
-            echo "App HTTP status after restart: ${CODE:-000}"
-            case "$CODE" in
-              2*|3*) echo "Deploy OK" ;;
-              *) echo "::warning::App did not answer with 2xx/3xx (got ${CODE:-000}). Check the server." ;;
-            esac
+          sshpass -e ssh \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o LogLevel=ERROR \
+            -o ConnectTimeout=30 \
+            -o ServerAliveInterval=30 \
+            -p "$SSH_PORT" \
+            "$SSH_USERNAME@$SSH_HOST" \
+            'bash -s' < /tmp/remote-deploy.sh
