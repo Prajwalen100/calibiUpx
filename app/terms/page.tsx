@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { ShieldCheck, FileText, ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 export const metadata = {
-  title: 'Terms & Conditions — Calibi Score',
-  description: 'Terms of service and code of conduct for taking Calibi Score employability assessments.',
+  title: 'Terms & Conditions — CalibiUpX',
+  description: 'Terms of service and code of conduct for taking CalibiUpX employability assessments.',
 }
 
 export default function TermsPage() {
@@ -33,7 +33,7 @@ export default function TermsPage() {
             Terms &amp; Conditions
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Last Updated: January 2026 · Calibi Score Employability &amp; Assessment Platform
+            Last Updated: January 2026 · CalibiUpX Employability &amp; Assessment Platform
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export default function TermsPage() {
               Acceptance of Terms
             </h2>
             <p>
-              By accessing or using the Calibi Score platform (accessible via web and mobile interfaces), registering an account, or undertaking any proctored assessment or company mock exam, you agree to be bound by these Terms &amp; Conditions and our Privacy Policy. If you do not agree to these terms, you may not register or attempt any assessment.
+              By accessing or using the CalibiUpX platform (accessible via web and mobile interfaces), registering an account, or undertaking any proctored assessment or company mock exam, you agree to be bound by these Terms &amp; Conditions and our Privacy Policy. If you do not agree to these terms, you may not register or attempt any assessment.
             </p>
           </section>
 
@@ -65,7 +65,7 @@ export default function TermsPage() {
               Assessment Integrity and Anti-Cheat Regulations
             </h2>
             <p className="mb-3">
-              To ensure every Calibi Score represents an honest, verified reflection of technical and cognitive capability, all official assessments employ browser-level proctoring and telemetry. While undergoing an assessment, candidates agree to:
+              To ensure every CalibiUpX score represents an honest, verified reflection of technical and cognitive capability, all official assessments employ browser-level proctoring and telemetry. While undergoing an assessment, candidates agree to:
             </p>
             <ul className="space-y-2 pl-2">
               <li className="flex items-start gap-2">
@@ -92,7 +92,7 @@ export default function TermsPage() {
               Scoring Methodology and Credential Verification
             </h2>
             <p>
-              The Calibi Score is an objective 1000-point benchmark computed across English communication, problem solving, AI debugging, feature development, prompt engineering, and cognitive evaluation. Every generated PDF report contains a cryptographic, tamper-evident hash that employers and campus placement cells can verify directly against our database.
+              The CalibiUpX score is an objective 1000-point benchmark computed across English communication, problem solving, AI debugging, feature development, prompt engineering, and cognitive evaluation. Every generated PDF report contains a cryptographic, tamper-evident hash that employers and campus placement cells can verify directly against our database.
             </p>
           </section>
 
@@ -102,7 +102,7 @@ export default function TermsPage() {
               Intellectual Property
             </h2>
             <p>
-              All assessment questions, algorithmic problem statements, test suites, rubric scoring models, UI designs, and logos are the intellectual property of Calibi Score. You may not copy, scrape, distribute, publish, or leak question banks or solution code onto third-party forums or repositories.
+              All assessment questions, algorithmic problem statements, test suites, rubric scoring models, UI designs, and logos are the intellectual property of CalibiUpX. You may not copy, scrape, distribute, publish, or leak question banks or solution code onto third-party forums or repositories.
             </p>
           </section>
 
@@ -112,7 +112,7 @@ export default function TermsPage() {
               Limitation of Liability
             </h2>
             <p>
-              While Calibi Score strives for 99.9% uptime, we are not liable for candidate internet disconnections, device malfunctions, or power outages during live exams. In the event of a verified platform-side technical fault, eligible candidates are granted an assessment reset pursuant to our Cancellation &amp; Refund Policy.
+              While CalibiUpX strives for 99.9% uptime, we are not liable for candidate internet disconnections, device malfunctions, or power outages during live exams. In the event of a verified platform-side technical fault, eligible candidates are granted an assessment reset pursuant to our Cancellation &amp; Refund Policy.
             </p>
           </section>
 

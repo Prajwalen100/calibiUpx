@@ -5,18 +5,24 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import CookieConsent from '@/components/CookieConsent'
 
 export const metadata: Metadata = {
-  title: 'Calibi Score — Your verified employability score',
-  description: 'One 1000-point Calibi Score: communication, problem solving, AI skills and cognition — assessed and verified.',
+  title: 'CalibiUpX — Your verified employability score',
+  description: 'One 1000-point CalibiUpX score: communication, problem solving, AI skills and cognition — assessed and verified.',
   icons: {
     icon: [
+      { url: '/favicon.ico?v=5', sizes: 'any' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/logo.png', type: 'image/png' },
-      { url: '/favicon.ico?v=3', sizes: 'any' },
     ],
     apple: [
-      { url: '/logo.png', sizes: '96x96' },
+      { url: '/apple-touch-icon.png', sizes: '180x180' },
+      { url: '/logo.png', sizes: '192x192' },
     ],
   },
 }
+
+import { ProProvider } from '@/lib/pro/context'
+import { UpgradeModal } from '@/components/pro/UpgradeModal'
+import { InvoiceModal } from '@/components/pro/InvoiceModal'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -33,6 +39,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 } else {
                   document.documentElement.classList.remove('dark');
                 }
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    for (var r of regs) r.unregister();
+                  });
+                }
+                if ('caches' in window) {
+                  caches.keys().then(function(keys) {
+                    for (var k of keys) caches.delete(k);
+                  });
+                }
               } catch (_) {}
             `,
           }}
@@ -45,8 +61,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         <ThemeProvider>
           <StoreProvider>
-            {children}
-            <CookieConsent />
+            <ProProvider>
+              {children}
+              <UpgradeModal />
+              <InvoiceModal />
+              <CookieConsent />
+            </ProProvider>
           </StoreProvider>
         </ThemeProvider>
       </body>

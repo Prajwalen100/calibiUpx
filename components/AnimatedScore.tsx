@@ -13,7 +13,7 @@
 import { useEffect, useState } from 'react'
 
 interface Props {
-  /** Calibi score 0-1000. Null/undefined renders a quiet placeholder. */
+  /** CalibiUpX score 0-1000. Null/undefined renders a quiet placeholder. */
   score: number | null | undefined
   /** Tier label ("Grade D", "Grade A+", "Gold", "Platinum", etc.). */
   tier?: string

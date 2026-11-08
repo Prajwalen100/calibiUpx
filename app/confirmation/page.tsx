@@ -6,19 +6,17 @@ import { Stepper } from '@/components/Stepper'
 
 function Inner(){
   const router = useRouter()
-  const {profile, resume, tracking} = useStore()
+  const {profile, resume} = useStore()
   const items = [
     {label:'Your profile', done: !!profile, detail: profile?.full_name || 'Not filled'},
     {label:'Resume analysis', done: !!resume, detail: resume ? `${resume.resume_score}/100` : 'Not uploaded'},
-    {label:'WhatsApp community', done: tracking.whatsapp, detail: tracking.whatsapp ? 'Joined' : 'Skipped'},
-    {label:'LinkedIn', done: tracking.linkedin, detail: tracking.linkedin ? 'Followed' : 'Skipped'},
   ]
   const ready = !!profile && !!resume
   return (
     <div>
       <Navbar />
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-        <Stepper step={6} />
+        <Stepper step={4} />
         <div className="mt-6 glass-card animate-fade-up">
           <h1 className="text-2xl font-black text-slate-900">You're all set</h1>
           <p className="text-sm text-slate-500 mt-1">A quick check before you begin the assessment.</p>

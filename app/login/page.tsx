@@ -213,11 +213,16 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm animate-fade-up">
         {/* Logo */}
-        <Link href="/" className="flex flex-col items-center gap-2">
-          <Logo height={44} />
-          <span className="font-display text-lg font-extrabold tracking-tight text-slate-900">
-            CALIBIAI<span className="text-indigo-600"> SCORE</span>
-          </span>
+        <Link href="/" className="flex flex-col items-center gap-2.5 group select-none">
+          <Logo size={56} className="transition-transform duration-200 group-hover:scale-105" />
+          <div className="flex flex-col items-center text-center">
+            <span className="font-display text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+              Calibi<span className="upx-gradient font-black">UpX</span>
+            </span>
+            <span className="text-[9.5px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 mt-1">
+              Assess · Elevate · Get Hired
+            </span>
+          </div>
         </Link>
 
         {/* Card */}

@@ -16,6 +16,7 @@ import { ReportModal } from '@/components/ReportModal'
 import { ReadinessSidebar } from '@/components/ReadinessSidebar'
 import { assessmentVisibility } from '@/lib/assessmentVisibility'
 import { CompanyCatalog } from '@/components/company/CompanyCatalog'
+import { MentorlyDock } from '@/components/mentorly/MentorlyDock'
 import { CalibiScoreCard } from '@/components/CalibiScoreCard'
 import { SkillCategoryChart } from '@/components/SkillCategoryChart'
 import { SkillCoverageChart } from '@/components/SkillCoverageChart'
@@ -25,9 +26,19 @@ import type { AttemptSummary } from '@/lib/company/types'
 import { authenticatedFetch } from '@/lib/clientAuth'
 import { companyApi, getCompanyAttemptsCache, saveCompanyAttemptsCache } from '@/lib/company/client'
 
+function getTimeGreeting(): { greeting: string; icon: string } {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) return { greeting: 'Good morning', icon: '🌅' }
+  if (hour >= 12 && hour < 17) return { greeting: 'Good afternoon', icon: '☀️' }
+  if (hour >= 17 && hour < 22) return { greeting: 'Good evening', icon: '🌆' }
+  return { greeting: 'Good night', icon: '🌙' }
+}
+
 function Inner(){
   const router = useRouter()
   const { user, profile, setProfile, resume, setResume, scores, setScores, scores2, setScores2, hydrated, setUser, reconcileForUser } = useStore()
+  const { greeting, icon } = useMemo(() => getTimeGreeting(), [])
+  const firstName = profile?.full_name ? profile.full_name.trim().split(' ')[0] : (user?.name ? user.name.trim().split(' ')[0] : '')
   const [showReport, setShowReport] = useState(false)
   const [companyAttempts, setCompanyAttempts] = useState<AttemptSummary[]>(() => getCompanyAttemptsCache())
   const [companyLoaded, setCompanyLoaded] = useState(() => getCompanyAttemptsCache().length > 0)
@@ -239,7 +250,9 @@ function Inner(){
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="animate-fade-up">
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white">Hello{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''} 👋</h1>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
+            {greeting}{firstName ? `, ${firstName}` : ''} {icon}
+          </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Here's your readiness overview and next steps.</p>
         </div>
 
@@ -391,6 +404,8 @@ function Inner(){
 
       </main>
       <Footer />
+      {/* Mentorly — AI placement coach, pinned bottom-left */}
+      <MentorlyDock />
     </div>
   )
 }

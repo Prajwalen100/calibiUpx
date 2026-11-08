@@ -112,11 +112,16 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm animate-fade-up">
-        <div className="flex flex-col items-center gap-2">
-          <Logo height={44} />
-          <span className="font-display text-lg font-extrabold tracking-tight text-slate-900">
-            CALIBIAI<span className="text-indigo-600"> SCORE</span>
-          </span>
+        <div className="flex flex-col items-center gap-2.5 select-none">
+          <Logo size={52} className="transition-transform duration-200" />
+          <div className="flex flex-col items-center text-center">
+            <span className="font-display text-2xl font-black tracking-tight text-slate-900 leading-tight">
+              Calibi<span className="upx-gradient font-black">UpX</span>
+            </span>
+            <span className="text-[9.5px] font-bold tracking-[0.2em] uppercase text-slate-400 mt-1">
+              Assess · Elevate · Get Hired
+            </span>
+          </div>
         </div>
 
         <div className="glass-card mt-6 !p-7 sm:!p-8">
@@ -846,11 +851,16 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-white/50 bg-white/55 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <Logo className="drop-shadow-lg" />
-            <span className="text-lg font-extrabold tracking-tight text-slate-900">
-              CALIBIAI<span className="text-indigo-600"> SCORE</span>
-            </span>
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group select-none">
+            <Logo size={38} className="transition-transform duration-200 group-hover:scale-105" />
+            <div className="flex flex-col justify-center">
+              <span className="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 leading-tight">
+                Calibi<span className="upx-gradient font-black">UpX</span>
+              </span>
+              <span className="text-[8.5px] font-bold tracking-[0.18em] uppercase text-slate-400 mt-0.5">
+                Assess · Elevate · Get Hired
+              </span>
+            </div>
             <span className="ml-1 rounded-full bg-indigo-600/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-indigo-600">Admin</span>
           </Link>
           <div className="flex items-center gap-2 text-sm">

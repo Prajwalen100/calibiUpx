@@ -13,11 +13,8 @@ import { COMPANY_BY_SLUG, companyMockFacts } from '@/lib/company/catalog'
 import { signedInLandingRoute, afterSignInRoute } from '@/lib/nextStep'
 import { isProfileComplete } from '@/lib/validate'
 import { getLiveUser } from '@/lib/session'
+import { Cpu, CalendarClock, Mic, FileCheck2, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react'
 
-const MODULES = [
-  'English Communication', 'Problem Solving', 'AI Debugging',
-  'AI Feature Dev', 'Prompt Engineering', 'Cognitive Assessment',
-]
 
 const SHOWCASE_SLUGS = [
   'capgemini',
@@ -97,22 +94,25 @@ function Landing() {
         <section className="pt-12 sm:pt-20 pb-12 grid lg:grid-cols-2 gap-14 items-center">
           <div className="animate-fade-up">
             <span className="chip text-indigo-700 border-indigo-200 bg-indigo-50/70">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" /> Trusted by 10k+ students · 4.9★ rating
+              <span className="w-2 h-2 rounded-full bg-emerald-500" /> Trusted by 5k+ students · 4.9★ rating
             </span>
-            <h1 className="mt-5 text-4xl sm:text-5xl lg:text-[3.4rem] font-black leading-[1.05] tracking-tight text-slate-900">
-              <Typewriter text="Your skills." delay={90} />
-              <br />
-              One <span className="text-gradient">verified score.</span>
+            <h1 className="mt-4 sm:mt-5 text-4xl sm:text-5xl lg:text-[3.35rem] font-black leading-[1.08] tracking-tight text-slate-900 dark:text-white min-h-[75px] sm:min-h-[92px] lg:min-h-[114px]">
+              <Typewriter
+                text="A smarter way to get hired in the AI era."
+                highlightText="AI era."
+                loopInterval={10000}
+                typingDelay={50}
+              />
             </h1>
-            <p className="mt-4 text-slate-500 text-lg max-w-md">
-              Communication, problem solving, AI skills &amp; cognition — one signal employers trust.
+            <p className="mt-2.5 sm:mt-3 text-slate-600 dark:text-slate-300 text-base sm:text-lg max-w-xl leading-relaxed">
+              Assess your real-world skills, elevate your placement readiness, and get hired with AI-verified credentials top employers trust.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-6 sm:mt-7 flex flex-wrap gap-3">
               <Link href={startHref} className="btn-primary">Start your free assessment →</Link>
               <Link href="/sample-report" className="btn-soft">See a sample report</Link>
             </div>
 
-            {/* Social proof trust badge — 10k+ students, 4.9/5 rating */}
+            {/* Social proof trust badge — 5k+ students, 4.9/5 rating */}
             <div className="mt-6 flex items-center gap-3">
               <div className="flex -space-x-2.5 overflow-hidden">
                 <img
@@ -136,7 +136,7 @@ function Landing() {
                   className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover"
                 />
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-violet-600 text-[10px] font-black text-white ring-2 ring-white shadow-xs">
-                  10k+
+                  5k+
                 </span>
               </div>
               <div className="text-left">
@@ -144,40 +144,130 @@ function Landing() {
                   <div className="flex text-amber-400 text-xs">
                     {'★★★★★'}
                   </div>
-                  <span className="text-xs font-black text-slate-900">4.9 / 5.0 Rating</span>
+                  <span className="text-xs font-black text-slate-900 dark:text-white">4.9 / 5.0 Rating</span>
                 </div>
-                <p className="text-[11px] font-medium text-slate-500">
-                  Trusted by <span className="font-bold text-slate-700">10,000+ students</span> across campus drives
+                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  Trusted by <span className="font-bold text-slate-700 dark:text-slate-200">5k+ students</span> across campus drives
                 </p>
               </div>
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-5 text-sm text-slate-500">
-              {['⏱ 120 minutes', '🧩 6 skill modules', '📄 PDF credential'].map(t => (
-                <span key={t} className="flex items-center gap-1.5">{t}</span>
-              ))}
-            </div>
+
           </div>
 
           {/* MacBook window: typing report + self-drawing graph, ambient chart behind */}
           <HeroMockup />
         </section>
 
-        {/* What you get — three tiles, one line each */}
-        <section className="py-10">
-          <div className="text-center text-[11px] font-bold uppercase tracking-[.25em] text-indigo-500">What you get</div>
-          <div className="mt-6 grid sm:grid-cols-3 gap-4">
+        {/* Core Pillars — AI Assessment, AI Planner, Real-Time AI Interview, Instant Reports */}
+        <section className="py-12 sm:py-16">
+          <div className="flex flex-col items-center text-center animate-fade-up">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-indigo-50/90 dark:bg-indigo-950/60 px-3.5 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-indigo-700 dark:text-cyan-400 shadow-2xs">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-cyan-400" />
+              Complete Placement Suite
+            </span>
+            <h2 className="mt-3.5 text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+              Everything you need to <span className="upx-gradient">get hired.</span>
+            </h2>
+            <p className="mt-2 text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+              Diagnostic assessments, intelligent preparation roadmaps, simulated interview rounds, and instant verified credentials.
+            </p>
+          </div>
+
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { icon: '🎯', t: 'One score, every skill', d: 'Six skills. One 1000-point credential.' },
-              { icon: '🧠', t: 'AI-verified evidence', d: 'Objective scoring, AI-reviewed.' },
-              { icon: '📄', t: 'Shareable PDF report', d: 'A credential employers can verify.' },
-            ].map((c, i) => (
-              <div key={c.t} className="glass-card hover-lift !p-6 animate-fade-up" style={{ animationDelay: `${0.05 * i}s` }}>
-                <div className="w-10 h-10 rounded-xl calibiai-gradient flex items-center justify-center text-lg shadow-lg shadow-indigo-200">{c.icon}</div>
-                <div className="mt-3 font-bold text-slate-800">{c.t}</div>
-                <div className="text-sm text-slate-500 mt-0.5">{c.d}</div>
-              </div>
-            ))}
+              {
+                icon: Cpu,
+                tag: 'Adaptive Testing',
+                title: 'AI-Powered Assessment',
+                desc: 'Multi-skill timed diagnostic spanning algorithmic coding, AI debugging, prompt engineering, and cognitive depth with anti-cheat telemetry.',
+                badge: '6 Skill Dimensions',
+                gradient: 'from-cyan-500 to-blue-600',
+                borderHover: 'hover:border-cyan-400/60',
+                glow: 'from-cyan-400/20 to-blue-500/10',
+                shadow: 'shadow-cyan-500/20',
+                tagBg: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-950/60 dark:text-cyan-300 dark:border-cyan-800/60',
+              },
+              {
+                icon: CalendarClock,
+                tag: 'Personalized Path',
+                title: 'AI Placement Planner',
+                desc: 'Smart diagnostic study schedules that analyze your weak topics, benchmark your pace, and build customized roadmaps for target companies.',
+                badge: 'Targeted Prep Tracks',
+                gradient: 'from-blue-600 to-indigo-600',
+                borderHover: 'hover:border-blue-400/60',
+                glow: 'from-blue-400/20 to-indigo-500/10',
+                shadow: 'shadow-blue-500/20',
+                tagBg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/60',
+              },
+              {
+                icon: Mic,
+                tag: 'Live Voice & Code',
+                title: 'Real-Time AI Interview',
+                desc: 'Realistic interactive voice and coding simulations with instantaneous AI evaluating verbal communication, logic, and interview composure.',
+                badge: 'Conversational Feedback',
+                gradient: 'from-indigo-600 to-purple-600',
+                borderHover: 'hover:border-indigo-400/60',
+                glow: 'from-indigo-400/20 to-purple-500/10',
+                shadow: 'shadow-indigo-500/20',
+                tagBg: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/60',
+              },
+              {
+                icon: FileCheck2,
+                tag: 'Tamper-Proof Credential',
+                title: 'Instant Verified Reports',
+                desc: 'Generate immediate section analytics and cryptographic 1000-point PDF credentials ready to attach to resumes or send to recruiters.',
+                badge: 'Shareable PDF Hash',
+                gradient: 'from-purple-600 to-pink-600',
+                borderHover: 'hover:border-purple-400/60',
+                glow: 'from-purple-400/20 to-pink-500/10',
+                shadow: 'shadow-purple-500/20',
+                tagBg: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/60',
+              },
+            ].map((f, i) => {
+              const Icon = f.icon
+              return (
+                <div
+                  key={f.title}
+                  className={`glass-card group relative flex flex-col justify-between overflow-hidden !p-6 sm:!p-7 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl dark:border-slate-800/80 ${f.borderHover} animate-fade-up`}
+                  style={{ animationDelay: `${0.08 * i}s` }}
+                >
+                  {/* Subtle top corner ambient glow */}
+                  <div className={`pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-gradient-to-br ${f.glow} blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-50`} />
+
+                  <div>
+                    {/* Top row: Icon plate + Category Tag */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${f.gradient} text-white shadow-md ${f.shadow} transition-transform duration-300 group-hover:scale-110`}>
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${f.tagBg}`}>
+                        {f.tag}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="mt-5 text-lg font-black tracking-tight text-slate-900 dark:text-white transition-colors duration-200 group-hover:text-indigo-600 dark:group-hover:text-cyan-400">
+                      {f.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                      {f.desc}
+                    </p>
+                  </div>
+
+                  {/* Bottom pill tag */}
+                  <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                      {f.badge}
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-slate-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-indigo-600 dark:group-hover:text-cyan-400" />
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </section>
 
@@ -187,28 +277,18 @@ function Landing() {
             {/* Subtle ambient background glow */}
             <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-96 rounded-full bg-gradient-to-br from-indigo-200/40 via-violet-200/30 to-pink-200/20 blur-3xl -z-10" />
 
-            <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50/90 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-indigo-700 shadow-2xs">
+            <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/90 dark:bg-indigo-950/80 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-indigo-700 dark:text-indigo-300 shadow-2xs">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" /> 50+ Exam-Oriented Company Mocks
             </span>
 
-            <h2 className="mt-4 text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
-              Ready when you are.
+            <h2 className="mt-4 text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+              Every company tests differently.{' '}
+              <span className="upx-gradient">Master each pattern.</span>
             </h2>
-            <p className="mt-2 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              120 minutes · Six skill modules · One score employers trust. Plus, realistic mocks reverse-engineered to the latest exam patterns of 50+ leading companies.
+            <p className="mt-2.5 text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              No generic question banks. Replicate authentic recruitment blueprints — from game-based aptitude to algorithmic stress tests — with sectional timers, negative marking, and real hiring cutoffs.
             </p>
 
-            {/* Core skill modules chips */}
-            <div className="mt-6 flex flex-wrap justify-center gap-2">
-              {MODULES.map((m, i) => (
-                <span
-                  key={m}
-                  className="chip !bg-white/80 !text-slate-700 font-semibold shadow-2xs hover:border-indigo-300 hover:text-indigo-700 transition"
-                >
-                  <span className="text-indigo-600 font-black">{i + 1}.</span> {m}
-                </span>
-              ))}
-            </div>
 
             {/* 50+ Companies sliding ticker */}
             <div className="mt-9 overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-gradient-to-b from-slate-50/70 via-white to-indigo-50/30 dark:from-slate-900/90 dark:via-slate-900/60 dark:to-indigo-950/30 p-4 sm:p-5 shadow-sm text-left">
@@ -310,7 +390,7 @@ function Landing() {
                   Instant AI Feedback &amp; Score
                 </h4>
                 <p className="mt-1.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                  Automatic code execution on hidden stress tests, section-wise score analytics, and a verified 1000-point Calibi Score credential you can attach directly to your resume.
+                  Automatic code execution on hidden stress tests, section-wise score analytics, and a verified 1000-point CalibiUpX credential you can attach directly to your resume.
                 </p>
               </div>
             </div>
@@ -331,7 +411,7 @@ function Landing() {
               </Link>
             </div>
             <p className="mt-3 text-xs text-slate-400 font-medium">
-              Free to begin · 6 skill modules · Pattern-matched hiring papers · Instant verified report
+              Free to begin · Authentic company pattern mocks · Sectional cutoffs · Instant verified report
             </p>
           </div>
         </section>

@@ -13,6 +13,8 @@ import { companyApi, getCompanyResultCache, saveCompanyResultCache } from '@/lib
 import { CompanyBadge } from '@/components/company/CompanyBadge'
 import { MAX_FOCUS_STRIKES } from '@/lib/proctoring'
 import { authenticatedFetch } from '@/lib/clientAuth'
+import { usePro } from '@/lib/pro/context'
+import { Crown, Zap } from 'lucide-react'
 import type { AttemptSummary, SectionId } from '@/lib/company/types'
 
 function Spinner({ label }: { label: string }) {
@@ -27,6 +29,7 @@ function Spinner({ label }: { label: string }) {
 export default function Page({ params }: { params: { slug: string } }) {
   const router = useRouter()
   const { user, profile, setProfile, hydrated } = useStore()
+  const { isPro, openUpgradeModal } = usePro()
   // The profile may not be in the client store yet (fresh device, cleared site
   // data, deep link) — load it before deciding the student isn't onboarded.
   const [profileChecked, setProfileChecked] = useState(false)
@@ -102,8 +105,13 @@ export default function Page({ params }: { params: { slug: string } }) {
   const onboarded = isProfileComplete(profile)
   const assessedSteps = new Map(blueprint.rounds.map((r, i) => [r.step, { round: r, index: i }]))
 
+  const isCapgemini = company.slug === 'capgemini'
   const start = async () => {
     if (!user?.id || starting) return
+    if (!isCapgemini && !isPro) {
+      openUpgradeModal(`${company.name} Mock Assessment`)
+      return
+    }
     setStarting(true)
     setError('')
     const res = await companyApi.start(user.id, company.slug)
@@ -247,6 +255,26 @@ export default function Page({ params }: { params: { slug: string } }) {
                   </div>
                 ) : state === 'in_progress' ? (
                   <button onClick={() => router.push(`/company-assessments/${company.slug}/test`)} className="btn-primary mt-5 w-full !py-3.5">Resume your attempt →</button>
+                ) : !isCapgemini && !isPro ? (
+                  <div className="mt-5 rounded-2xl border-2 border-amber-300 dark:border-amber-600/70 bg-gradient-to-br from-amber-50/90 via-indigo-50/60 to-purple-50/60 dark:from-amber-950/40 dark:via-indigo-950/40 dark:to-purple-950/40 p-4 text-center">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/50 text-amber-700 dark:text-amber-300 text-[10px] font-black uppercase tracking-wider mb-2">
+                      <Crown className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                      Pro Mock Exam
+                    </div>
+                    <div className="text-sm font-extrabold text-slate-900 dark:text-white">
+                      Unlock {company.name} Mock with CalibiUpX Pro
+                    </div>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                      Calibi Core & Capgemini 2027 are 100% Free. Upgrade to Pro to take this mock exam and unlock all 60+ companies.
+                    </p>
+                    <button
+                      onClick={() => openUpgradeModal(`${company.name} Mock Assessment`)}
+                      className="btn-primary mt-3.5 w-full !py-3 flex items-center justify-center gap-2 font-black text-xs shadow-lg shadow-indigo-500/25"
+                    >
+                      <Zap className="w-4 h-4 fill-yellow-300 text-yellow-300" />
+                      Upgrade to Pro (from ₹299/-) →
+                    </button>
+                  </div>
                 ) : (
                   <>
                     <label className="mt-5 flex gap-2 text-xs text-slate-700 cursor-pointer">

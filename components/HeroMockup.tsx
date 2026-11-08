@@ -145,7 +145,7 @@ export function HeroMockup() {
         <span className="flex h-7 w-7 items-center justify-center rounded-xl calibiai-gradient text-xs text-white">🧠</span>
         <div>
           <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-400">Evaluated by</div>
-          <div className="text-xs font-bold text-slate-800 dark:text-slate-100">CalibiAI</div>
+          <div className="text-xs font-bold text-slate-800 dark:text-slate-100">CalibiUpX</div>
         </div>
       </div>
       <div aria-hidden className="absolute -right-4 bottom-14 z-20 hidden animate-float-slower lg:flex items-center gap-2 rounded-2xl border border-white/70 bg-white/80 dark:border-slate-700/80 dark:bg-slate-900/90 dark:shadow-violet-950/50 px-3.5 py-2.5 shadow-xl shadow-violet-200/50 backdrop-blur">
@@ -171,7 +171,7 @@ export function HeroMockup() {
                 <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
               </span>
               <span className="mx-auto flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-[10px] font-medium text-slate-500 dark:text-slate-300">
-                <span aria-hidden>🔒</span> calibiai.app/score
+                <span aria-hidden>🔒</span> calibiUpX.com
               </span>
               <span className="hidden items-center gap-1 text-[8px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 sm:flex">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" /> Live
@@ -188,7 +188,9 @@ export function HeroMockup() {
               {/* Headline — appears once the report is "ready" */}
               <div className={`flex items-end justify-between gap-3 transition-all duration-500 ${done ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`}>
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Calibi Score</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">
+                    Calibi<span className="upx-gradient font-black">UpX</span>
+                  </div>
                   <div className="mt-1 flex items-baseline gap-2">
                     <span className="text-4xl font-black text-gradient sm:text-[2.6rem]">842</span>
                     <span className="text-xs font-bold text-slate-400 dark:text-slate-500">/1000</span>

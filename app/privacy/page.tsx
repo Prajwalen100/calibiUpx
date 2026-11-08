@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { Lock, ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 export const metadata = {
-  title: 'Privacy Policy — Calibi Score',
-  description: 'How Calibi Score collects, protects, and uses candidate data and assessment telemetry.',
+  title: 'Privacy Policy — CalibiUpX',
+  description: 'How CalibiUpX collects, protects, and uses candidate data and assessment telemetry.',
 }
 
 export default function PrivacyPage() {
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Last Updated: January 2026 · Calibi Score Employability &amp; Assessment Platform
+            Last Updated: January 2026 · CalibiUpX Employability &amp; Assessment Platform
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export default function PrivacyPage() {
               Information We Collect
             </h2>
             <p className="mb-3">
-              We collect information that allows us to authenticate you, administer proctored assessments, and generate your verified Calibi Score:
+              We collect information that allows us to authenticate you, administer proctored assessments, and generate your verified CalibiUpX score:
             </p>
             <ul className="space-y-2 pl-2">
               <li className="flex items-start gap-2">
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
             </h2>
             <p className="mb-2">Your data is utilized solely for legitimate educational and recruitment readiness objectives:</p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
-              <li>Computing your verified 1000-point Calibi Score across the 6 skill dimensions.</li>
+              <li>Computing your verified 1000-point CalibiUpX score across the 6 skill dimensions.</li>
               <li>Generating tamper-evident PDF talent reports and shareable credential hashes.</li>
               <li>Enabling approved enterprise recruiters and campus placement cells to verify candidate scores upon explicit consent.</li>
               <li>Training heuristic benchmark distributions to ensure fair percentiles across student cohorts.</li>

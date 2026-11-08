@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { RefreshCcw, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export const metadata = {
-  title: 'Cancellation & Refund Policy — Calibi Score',
+  title: 'Cancellation & Refund Policy — CalibiUpX',
   description: 'Policy regarding assessment attempts, cancellations, technical disruptions, and refund eligibility.',
 }
 
@@ -33,7 +33,7 @@ export default function RefundsPage() {
             Cancellation &amp; Refund Policy
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Last Updated: January 2026 · Calibi Score Employability &amp; Assessment Platform
+            Last Updated: January 2026 · CalibiUpX Employability &amp; Assessment Platform
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export default function RefundsPage() {
               Free Student Assessments
             </h2>
             <p>
-              The baseline Calibi Score assessment and select placement diagnostic mocks are provided free of charge to eligible university engineering and technology students. For complimentary evaluations, no payment details are requested, and cancellation involves simply discontinuing the session.
+              The baseline CalibiUpX assessment and select placement diagnostic mocks are provided free of charge to eligible university engineering and technology students. For complimentary evaluations, no payment details are requested, and cancellation involves simply discontinuing the session.
             </p>
           </section>
 
@@ -64,7 +64,7 @@ export default function RefundsPage() {
               </li>
               <li className="flex items-start gap-2">
                 <AlertCircle className="h-4 w-4 text-amber-600 mt-1 shrink-0" />
-                <span><strong>Initiated / Completed Assessments:</strong> Once an assessment timer begins and questions are delivered, or once a verified Calibi Score report and tamper-evident PDF credential have been generated, the fee becomes non-refundable due to consumed serverless evaluation compute and AI grading infrastructure.</span>
+                <span><strong>Initiated / Completed Assessments:</strong> Once an assessment timer begins and questions are delivered, or once a verified CalibiUpX report and tamper-evident PDF credential have been generated, the fee becomes non-refundable due to consumed serverless evaluation compute and AI grading infrastructure.</span>
               </li>
             </ul>
           </section>
@@ -75,7 +75,7 @@ export default function RefundsPage() {
               Platform Technical Failures &amp; Session Resets
             </h2>
             <p>
-              In the unlikely event that a verifiable technical defect on our platform (e.g., server outage, grader failure, or database connectivity interruption) prevents a candidate from completing their assessment or receiving their score, Calibi Score guarantees:
+              In the unlikely event that a verifiable technical defect on our platform (e.g., server outage, grader failure, or database connectivity interruption) prevents a candidate from completing their assessment or receiving their score, CalibiUpX guarantees:
             </p>
             <div className="mt-3 p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-sm text-indigo-900 space-y-1.5 font-medium">
               <div>✓ An immediate, complimentary reset of the assessment attempt.</div>

@@ -37,7 +37,7 @@ function ResumeInner() {
   const [dragOver, setDragOver] = useState(false)
   // `?edit=1` switches this page into the standalone "update your resume" view
   // (used from the student dashboard / profile). Without it the page is part of
-  // the one-time onboarding flow (stepper + continue → WhatsApp).
+  // the one-time onboarding flow (stepper + continue → confirmation).
   const [editMode, setEditMode] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -137,7 +137,7 @@ function ResumeInner() {
                 </>
               ) : (
                 <>
-                  <Link href="/tracking/whatsapp" replace className={`btn-primary ${!done ? 'pointer-events-none opacity-40' : ''}`}>Continue →</Link>
+                  <Link href="/confirmation" replace className={`btn-primary ${!done ? 'pointer-events-none opacity-40' : ''}`}>Continue →</Link>
                   <Link href="/profile" className="btn-soft">Back</Link>
                 </>
               )}

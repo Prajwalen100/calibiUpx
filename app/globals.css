@@ -89,6 +89,14 @@ body {
   .text-gradient {
     @apply bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-500 bg-clip-text text-transparent;
   }
+
+  /* CalibiUpX brand theme gradient: vivid cyan -> electric blue -> royal purple */
+  .upx-gradient {
+    background: linear-gradient(135deg, #00C4FF 0%, #0070F3 52%, #8A2BE2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 /* Display font for headings — geometric, friendly, modern */
@@ -271,6 +279,31 @@ body {
   }
   .cursor-blink { animation: none; }
 }
+
+/* ---------- Mentorly mascot: blink, wave, "Hi!" bubble, head bob ---------- */
+@keyframes mentorly-blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  94%           { transform: scaleY(0.08); }
+}
+@keyframes mentorly-wave {
+  0%, 55%, 100% { transform: rotate(0deg); }
+  65%           { transform: rotate(16deg); }
+  75%           { transform: rotate(-8deg); }
+  85%           { transform: rotate(16deg); }
+}
+@keyframes mentorly-hi {
+  0%, 8%   { opacity: 0; transform: scale(.4) translateY(4px); }
+  16%, 66% { opacity: 1; transform: scale(1) translateY(0); }
+  78%, 100%{ opacity: 0; transform: scale(.6) translateY(2px); }
+}
+@keyframes mentorly-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-0.6px) rotate(-1.5deg); }
+}
+.mentorly-eye  { transform-box: fill-box; transform-origin: center; animation: mentorly-blink 4.2s ease-in-out infinite; }
+.mentorly-hand { transform-box: fill-box; transform-origin: 72% 92%; animation: mentorly-wave 3s ease-in-out infinite; }
+.mentorly-hi   { transform-box: fill-box; transform-origin: bottom left; animation: mentorly-hi 5.5s ease-in-out infinite; }
+.mentorly-head { transform-box: fill-box; transform-origin: center bottom; animation: mentorly-bob 3.2s ease-in-out infinite; }
 
 .animate-fade-up { animation: fade-up .6s cubic-bezier(.22,.8,.32,1) both; }
 .animate-fade-in { animation: fade-in .5s ease both; }

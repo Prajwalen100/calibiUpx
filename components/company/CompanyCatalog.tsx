@@ -1,8 +1,9 @@
 'use client'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Search, X } from 'lucide-react'
+import { Search, X, Crown, Zap } from 'lucide-react'
 import { useStore } from '@/lib/store'
+import { usePro } from '@/lib/pro/context'
 import { COMPANIES, COMPANY_ORDER, COMPANY_TAGS, PRIORITY_LABEL, TAG_BY_ID, byPlanOrder, companyMockFacts } from '@/lib/company/catalog'
 import { companyApi, getCompanyAttemptsCache, saveCompanyAttemptsCache } from '@/lib/company/client'
 import type { AttemptSummary, Company, CompanyTagId, Priority } from '@/lib/company/types'
@@ -31,9 +32,11 @@ function isOpen(a?: AttemptSummary) {
 }
 
 function CompanyCard({ company, attempt }: { company: Company; attempt?: AttemptSummary }) {
+  const { isPro, openUpgradeModal } = usePro()
   const facts = companyMockFacts(company)
   const done = !!attempt && attempt.status !== 'in_progress'
   const open = isOpen(attempt)
+  const isCapgemini = company.slug === 'capgemini'
   const href = done
     ? `/company-assessments/${company.slug}/result`
     : open ? `/company-assessments/${company.slug}/test` : `/company-assessments/${company.slug}`
@@ -51,6 +54,19 @@ function CompanyCard({ company, attempt }: { company: Company; attempt?: Attempt
             <span className={`shrink-0 rounded-lg border px-1.5 py-0.5 text-[10px] font-black ${PRIORITY_TONE[company.priority]}`} title={PRIORITY_LABEL[company.priority]}>
               P{company.priority}
             </span>
+            {isCapgemini ? (
+              <span className="shrink-0 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider">
+                FREE
+              </span>
+            ) : isPro ? (
+              <span className="shrink-0 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5">
+                <Crown className="w-2.5 h-2.5 fill-amber-400" /> PRO
+              </span>
+            ) : (
+              <span className="shrink-0 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5">
+                <Crown className="w-2.5 h-2.5 text-indigo-500" /> PRO
+              </span>
+            )}
           </div>
           <p className="mt-1 truncate text-[11px] font-medium text-slate-500 dark:text-slate-400" title={company.track}>{company.track}</p>
           <p className="mt-1 truncate text-[10px] font-semibold text-slate-400 dark:text-slate-500">{TAG_BY_ID[company.tag].label}</p>
@@ -76,9 +92,18 @@ function CompanyCard({ company, attempt }: { company: Company; attempt?: Attempt
             <span className="animate-pulse rounded-full border border-amber-200 dark:border-amber-700/60 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 text-[11px] font-bold text-amber-700 dark:text-amber-400">In progress</span>
             <span className="text-xs font-bold text-amber-700 dark:text-amber-400 transition group-hover:translate-x-0.5">Resume →</span>
           </>
+        ) : !isCapgemini && !isPro ? (
+          <>
+            <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+              <Crown className="w-3 h-3 fill-amber-400 text-amber-500" /> Pro Only
+            </span>
+            <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 flex items-center gap-0.5 transition group-hover:translate-x-0.5">
+              <Zap className="w-3 h-3 text-amber-500 fill-amber-400" /> Unlock Mock →
+            </span>
+          </>
         ) : (
           <>
-            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">1 attempt</span>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">{isCapgemini ? 'Free Mock' : '1 attempt'}</span>
             <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 transition group-hover:translate-x-0.5">Explore →</span>
           </>
         )}

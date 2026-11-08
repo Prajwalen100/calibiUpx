@@ -21,7 +21,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: 'Rohan Deshmukh',
     yearRole: '3rd Year Student · Computer Science',
     quote:
-      'The tests are completely up to the mark — every question from AI debugging to algorithmic coding felt like a real technical interview. Taking repeated mocks on Calibi Score helped me uncover critical gaps in my problem solving and build genuine speed.',
+      'The tests are completely up to the mark — every question from AI debugging to algorithmic coding felt like a real technical interview. Taking repeated mocks on CalibiUpX helped me uncover critical gaps in my problem solving and build genuine speed.',
     score: '784 / 1000',
     tier: 'Gold Tier',
     outcome: 'SDE Shortlist 2026',
@@ -32,7 +32,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: 'Ananya Sharma',
     yearRole: '4th Year Student · Information Technology',
     quote:
-      'I was really anxious before our placement season, but the timed proctored mocks gave me the exact feel of actual MNC hiring tests. The verified Calibi Score report on my resume gave recruiters instant proof of my skills — walked in confident and got placed!',
+      'I was really anxious before our placement season, but the timed proctored mocks gave me the exact feel of actual MNC hiring tests. The verified CalibiUpX report on my resume gave recruiters instant proof of my skills — walked in confident and got placed!',
     score: '812 / 1000',
     tier: 'Platinum Tier',
     outcome: 'Campus Placement Cleared',
@@ -43,7 +43,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: 'Aditya Verma',
     yearRole: '3rd Year Student · AI & Data Engineering',
     quote:
-      'Unlike generic quiz portals, Calibi Score tests real AI debugging and edge-case validation. The automated code evaluation against hidden test suites made a dramatic difference in how I approach technical coding rounds under time pressure.',
+      'Unlike generic quiz portals, CalibiUpX tests real AI debugging and edge-case validation. The automated code evaluation against hidden test suites made a dramatic difference in how I approach technical coding rounds under time pressure.',
     score: '746 / 1000',
     tier: 'Gold Tier',
     outcome: 'AI Engineering Intern',
@@ -76,7 +76,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: 'Priya Patel',
     yearRole: '4th Year Student · Information Technology',
     quote:
-      'Having an objective, verified 1000-point credential made a noticeable difference during interviews. The panel spent the first five minutes asking about my Calibi Score section breakdown instead of generic intro questions.',
+      'Having an objective, verified 1000-point credential made a noticeable difference during interviews. The panel spent the first five minutes asking about my CalibiUpX section breakdown instead of generic intro questions.',
     score: '825 / 1000',
     tier: 'Platinum Tier',
     outcome: 'Top Tier Tech Offer',
@@ -185,14 +185,17 @@ export function StudentTestimonials() {
           <span className="flex text-amber-400">★★★★★</span>
           <span className="font-extrabold text-slate-900 dark:text-white">4.9 / 5.0</span>
           <span className="text-slate-300 dark:text-slate-600">·</span>
-          <span>Trusted by 10,000+ Students</span>
+          <span>Trusted by 5,000+ Students</span>
         </div>
 
         <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
           Scores that <span className="text-gradient">open doors.</span>
         </h2>
         <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-          Verified feedback from 3rd and 4th year engineering students who benchmarked their placement readiness with Calibi Score.
+          How 3rd and 4th year engineering students benchmark their placement readiness with CalibiUpX.
+        </p>
+        <p className="mt-2 text-[11px] font-medium text-slate-400 dark:text-slate-500">
+          Illustrative examples. Photos are representative stock imagery, not specific individuals.
         </p>
       </div>
 
@@ -216,7 +219,7 @@ export function StudentTestimonials() {
                 >
                   <div className="glass-card !p-6 sm:!p-8">
                     <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start">
-                      {/* Real Indian Student Photo with verified LinkedIn badge */}
+                      {/* Student portrait (representative stock imagery) */}
                       <div className={`relative shrink-0 ${isActive ? 'animate-fade-up' : ''}`}>
                         <span aria-hidden className="absolute -inset-2.5 rounded-full calibiai-gradient opacity-25 blur-lg animate-glow" />
                         <div className="relative rounded-full p-[3px] calibiai-gradient shadow-lg">
@@ -228,15 +231,6 @@ export function StudentTestimonials() {
                               className="block"
                             />
                           </div>
-                          {/* LinkedIn Verified Badge on Avatar */}
-                          <span
-                            className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full bg-[#0a66c2] ring-2 ring-white dark:ring-slate-900 shadow-md transition hover:scale-110"
-                            title="Verified LinkedIn Student Profile"
-                          >
-                            <svg className="h-3.5 w-3.5 fill-white" viewBox="0 0 24 24" aria-hidden>
-                              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                            </svg>
-                          </span>
                         </div>
                       </div>
 
@@ -265,19 +259,6 @@ export function StudentTestimonials() {
                         <div className="mt-4">
                           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
                             <span className="font-black text-slate-900 dark:text-white text-base">{t.name}</span>
-                            {/* Realistic LinkedIn Profile Button */}
-                            <a
-                              href="https://www.linkedin.com/company/calibiai-academy"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 rounded-full border border-[#0a66c2]/30 dark:border-[#0a66c2]/60 bg-blue-50/70 dark:bg-[#0a66c2]/20 px-2.5 py-0.5 text-[11px] font-bold text-[#0a66c2] dark:text-blue-300 transition hover:bg-[#0a66c2] hover:text-white shadow-2xs"
-                              title={`View ${t.name}'s verified credentials on LinkedIn`}
-                            >
-                              <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24" aria-hidden>
-                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                              </svg>
-                              <span>LinkedIn Profile</span>
-                            </a>
                           </div>
 
                           <div className="mt-1 flex items-center justify-center sm:justify-start gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">

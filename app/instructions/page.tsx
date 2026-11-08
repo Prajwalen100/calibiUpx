@@ -129,7 +129,7 @@ function Inner(){
       <div>
         <Navbar />
         <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-          <Stepper step={7} />
+          <Stepper step={5} />
           <div className="mt-6 glass-card flex min-h-[22rem] flex-col items-center justify-center gap-3 text-center">
             <Spinner />
             <div className="text-sm font-bold text-slate-700">Checking your assessment status…</div>
@@ -144,7 +144,7 @@ function Inner(){
     <div>
       <Navbar />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <Stepper step={7} />
+        <Stepper step={5} />
         <div className="mt-6 grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 glass-card animate-fade-up">
             <h1 className="text-2xl font-black text-slate-900">Assessment instructions</h1>

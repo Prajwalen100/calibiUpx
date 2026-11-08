@@ -17,6 +17,7 @@ import { AnimatedScore } from '@/components/AnimatedScore'
 import { ProfileSkillSection } from '@/components/ProfileSkillSection'
 import { authenticatedFetch } from '@/lib/clientAuth'
 import type { AttemptSummary } from '@/lib/company/types'
+import { usePro } from '@/lib/pro/context'
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -82,6 +83,7 @@ function PanelHead({ tag, title, right }: { tag: string; title: string; right?: 
 function ProfileInner() {
   const router = useRouter()
   const { user, profile, setProfile, scores, resume, setUser, setScores, setResume, hydrated } = useStore()
+  const { isPro, openUpgradeModal, openInvoiceModal } = usePro()
   const [scoresPayload, setScoresPayload] = useState<any>(null)
   const [scores2Local, setScores2Local] = useState<any>(null)
   const [companyList, setCompanyList] = useState<AttemptSummary[]>([])
@@ -334,6 +336,23 @@ function ProfileInner() {
               <div className="mt-3 flex items-center gap-2 flex-wrap">
                 <span className="rounded-lg bg-white/10 border border-white/15 px-2.5 py-1 text-xs font-mono text-indigo-200">{handleFor(user.email, user.id)}</span>
                 <span className="rounded-lg bg-white/10 border border-white/15 px-2.5 py-1 text-xs font-mono text-indigo-200">{roleTag(profile)}</span>
+                {isPro ? (
+                  <button
+                    onClick={() => openInvoiceModal()}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-500/25 border border-amber-400/50 px-3 py-1 text-xs font-black text-amber-300 hover:scale-105 transition shadow-sm"
+                    title="CalibiUpX PRO Member — Click to View Official Tax Invoice"
+                  >
+                    <span>👑 PRO MEMBER</span>
+                    <span className="text-[10px] text-amber-200/90 underline font-semibold">(View Tax Invoice)</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => openUpgradeModal()}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 border border-indigo-400/40 px-3 py-1 text-xs font-bold text-white hover:scale-105 transition shadow-sm"
+                  >
+                    <span>⚡ Upgrade to Pro (31% OFF)</span>
+                  </button>
+                )}
               </div>
 
               {/* Talent score */}
@@ -408,7 +427,7 @@ function ProfileInner() {
                   </div>
                   <div className="min-w-0 w-full flex-1 sm:w-auto">
                     <div className="text-[11px] font-black uppercase tracking-[0.16em] text-indigo-200">Assessment overview</div>
-                    <h2 className="mt-1 text-2xl font-black tracking-tight text-white sm:text-3xl">Your Calibi Score</h2>
+                    <h2 className="mt-1 text-2xl font-black tracking-tight text-white sm:text-3xl">Your Calibi<span className="bg-gradient-to-r from-cyan-300 via-sky-300 to-fuchsia-300 bg-clip-text text-transparent font-black">UpX</span> Score</h2>
                     <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-slate-200">
                       {CALIBI_RULE}
                     </p>
@@ -438,11 +457,11 @@ function ProfileInner() {
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 dark:border-white/10 bg-white/60 dark:bg-slate-900/90 px-5 py-4 sm:px-7 transition-colors">
                 <div className="text-xs text-slate-600 dark:text-slate-300">
                   {calibi.count > 0
-                    ? <>Based on <span className="font-bold text-slate-700 dark:text-white">{calibi.count} completed assessment{calibi.count === 1 ? '' : 's'}</span>. Grades are computed from your final Calibi score.</>
+                    ? <>Based on <span className="font-bold text-slate-700 dark:text-white">{calibi.count} completed assessment{calibi.count === 1 ? '' : 's'}</span>. Grades are computed from your final CalibiUpX score.</>
                     : <>Take your first assessment to see your score here.</>}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  {calibi.entries.length > 0 && activeScores && (
+                  {calibi.entries.length > 0 && (activeScores || scores2Local) && (
                     <button
                       onClick={() => setShowReport(true)}
                       className="btn-primary !py-2.5 text-xs"
@@ -456,13 +475,24 @@ function ProfileInner() {
                         setDownloading(true)
                         try {
                           const { generateReportPdf } = await import('@/lib/reportPdf')
-                          const doc = await generateReportPdf({ scores: activeScores, profile, user })
-                          doc.save(`CalibiAI_Report_${activeScores?.session_id || 'scorecard'}.pdf`)
+                          const doc = await generateReportPdf({
+                            scores: activeScores,
+                            scores2: scores2Local,
+                            companyList,
+                            calibi,
+                            resume: activeResume,
+                            profile,
+                            user,
+                            comprehensive: true,
+                          })
+                          const safeName = String(profile?.full_name || user?.name || 'Candidate').trim().replace(/[^a-zA-Z0-9_-]+/g, '_')
+                          doc.save(`CalibiUpX_Comprehensive_Report_${safeName}.pdf`)
                         } catch (e) { console.warn('PDF generation failed:', e) }
                         finally { setDownloading(false) }
                       }}
-                      disabled={downloading || !activeScores}
+                      disabled={downloading}
                       className="btn-soft !py-2.5 text-xs"
+                      title="Download complete report covering all company results, scores and feedback"
                     >
                       {downloading ? 'Preparing PDF…' : '⬇ Download PDF'}
                     </button>

@@ -22,6 +22,25 @@ export async function POST(req: Request) {
   if (!ctx.ok) return ctx.response
   const sb = ctx.supabase ? ctx.db : null
   const studentId = ctx.studentId
+
+  // Gating: All 60 company mocks require CalibiUpX Pro; Capgemini 2027 Mock is Free!
+  if (company.slug !== 'capgemini' && sb) {
+    try {
+      const { data: sub } = await sb
+        .from('subscriptions')
+        .select('id')
+        .eq('student_id', studentId)
+        .eq('status', 'active')
+        .gt('expires_at', new Date().toISOString())
+        .limit(1)
+      if (!sub || sub.length === 0) {
+        return jsonError(403, `${company.name} Mock Assessment requires an active CalibiUpX Pro subscription. (Capgemini 2027 is Free!)`, { code: 'PRO_REQUIRED' })
+      }
+    } catch {
+      // In local/demo mode without subscription tables, proceed gracefully
+    }
+  }
+
   try {
     const res = await startAttempt(studentId, company.slug, { sb })
     if (res.outcome === 'completed') {

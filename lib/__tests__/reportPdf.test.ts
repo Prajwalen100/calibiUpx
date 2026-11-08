@@ -67,3 +67,81 @@ test('helpers stay stable for ReportModal', () => {
   assert.equal(tierFor(842).label, 'Platinum')
   assert.equal(reportSections({ english: { total: 200 }, cognitive: { total: 200 } })[0].pct, 100)
 })
+
+test('generateReportPdf generates comprehensive report with all company assessments', async () => {
+  const companyAttempts = [
+    { company: 'meta', status: 'submitted', score: 5.5, verdict: 'not-yet' },
+    { company: 'accenture', status: 'submitted', score: 13.3, verdict: 'borderline' },
+    { company: 'tcs', status: 'submitted', score: 3.7, verdict: 'not-yet' },
+    { company: 'infosys', status: 'submitted', score: 0, verdict: 'not-yet' },
+  ]
+  const doc = await generateReportPdf({
+    scores: richScores,
+    companyList: companyAttempts,
+    profile,
+    comprehensive: true,
+    logoDataUrl,
+  })
+  const pages = doc.getNumberOfPages()
+  assert.ok(pages >= 2, 'comprehensive report should be multi-page')
+  const pdfCommands = JSON.stringify((doc as any).internal.pages)
+  assert.match(pdfCommands, /All Assessment & Company Results/)
+  assert.match(pdfCommands, /Meta/)
+  assert.match(pdfCommands, /Accenture/)
+  assert.match(pdfCommands, /Evaluator Feedback & Placement Growth Strategy/)
+})
+
+test('generateReportPdf generates full 10-assessment report with all companies and feedback', async () => {
+  const a1 = { total: 72, grade: 'D', percentile: 5, english: { total: 20 }, cognitive: { total: 20 } }
+  const a2 = { total: 286, grade: 'C', percentile: 25, assessment_no: 2 }
+  const companyAttempts = [
+    { company: 'meta', status: 'submitted', score: 5.5, verdict: 'not-yet' },
+    { company: 'infosys', status: 'submitted', score: 0, verdict: 'not-yet' },
+    { company: 'hexaware', status: 'submitted', score: 0, verdict: 'not-yet' },
+    { company: 'accenture', status: 'submitted', score: 13.3, verdict: 'borderline' },
+    { company: 'zoho', status: 'submitted', score: 2.2, verdict: 'not-yet' },
+    { company: 'tcs', status: 'submitted', score: 3.7, verdict: 'not-yet' },
+    { company: 'capgemini', status: 'submitted', score: 11.8, verdict: 'borderline' },
+    { company: 'hcltech', status: 'submitted', score: 2.7, verdict: 'not-yet' },
+  ]
+  const doc = await generateReportPdf({
+    scores: a1,
+    scores2: a2,
+    companyList: companyAttempts,
+    profile: {
+      full_name: 'Prajwal Gulhane',
+      email: 'prajwal@example.com',
+      college: 'Pimpri Chinchwad College of Engineering',
+      degree: 'B.Tech Computer Engineering',
+      prn: 'PRN2026PCCOE',
+      cgpa: 8.5,
+      graduation_year: 2026,
+    },
+    resume: {
+      resume_score: 78,
+      feedback: {
+        suggestions: ['Add quantifiable metrics to project descriptions.'],
+        gaps: ['Include cloud deployment and containerization experience.'],
+      },
+    },
+    comprehensive: true,
+    logoDataUrl,
+  })
+  const pages = doc.getNumberOfPages()
+  assert.equal(pages, 3, '10 assessments should generate a 3-page comprehensive report')
+  const pdfCommands = JSON.stringify((doc as any).internal.pages)
+  assert.match(pdfCommands, /CalibiAI Assessment/)
+  assert.match(pdfCommands, /Capgemini 2027 Mock/)
+  assert.match(pdfCommands, /Meta/)
+  assert.match(pdfCommands, /Infosys/)
+  assert.match(pdfCommands, /Hexaware/)
+  assert.match(pdfCommands, /Accenture/)
+  assert.match(pdfCommands, /Zoho/)
+  assert.match(pdfCommands, /TCS/)
+  assert.match(pdfCommands, /HCLTech/)
+  assert.match(pdfCommands, /Evaluator Feedback & Placement Growth Strategy/)
+  assert.match(pdfCommands, /Demonstrated Strengths/)
+  assert.match(pdfCommands, /Critical Growth Areas & Score Blockers/)
+  assert.match(pdfCommands, /Actionable Placement Coaching/)
+  assert.match(pdfCommands, /Resume & ATS Screening Insights/)
+})

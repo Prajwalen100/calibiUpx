@@ -62,14 +62,14 @@ export function ScoreReport({ scores, sample = false }: Props) {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         {sample && (
           <div className="animate-fade-up rounded-2xl border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/80 dark:bg-indigo-950/70 px-4 py-3 text-sm text-indigo-700 dark:text-indigo-300">
-            <b>Sample report</b> — this is a preview of what your Calibi Score report looks like after completing the assessment.
+            <b>Sample report</b> — this is a preview of what your CalibiUpX report looks like after completing the assessment.
           </div>
         )}
         {/* Hero */}
         <div className="glass-card animate-fade-up">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <div className="text-xs font-bold tracking-widest text-indigo-600 dark:text-indigo-400 uppercase">Calibi Score Assessment</div>
+              <div className="text-xs font-black tracking-widest text-slate-800 dark:text-slate-200 uppercase">Calibi<span className="upx-gradient">UpX</span> Assessment</div>
               <div className="mt-2 flex items-baseline gap-3 flex-wrap">
                 <span className="text-6xl font-black text-gradient leading-none">{scores.total}</span>
                 <span className="text-slate-400 dark:text-slate-500 text-2xl font-bold">/ 1000</span>

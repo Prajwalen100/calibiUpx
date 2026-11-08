@@ -1,6 +1,6 @@
 'use client'
 export function Stepper({step}:{step:number}){
-  const steps = ['Login','Profile','Resume','WhatsApp','LinkedIn','Confirm','Instructions','Assessment']
+  const steps = ['Login', 'Profile', 'Resume', 'Confirm', 'Instructions', 'Assessment']
   return (
     <div className="glass rounded-2xl px-4 py-3">
       <div className="flex items-center gap-1 overflow-x-auto">

@@ -167,6 +167,71 @@ export async function callLlm(opts: CallLlmOptions): Promise<string | null> {
 }
 
 /**
+ * Stream the model's reply as it is generated (OpenAI-compatible SSE).
+ *
+ * Yields content deltas as they arrive so the UI can type the answer in real
+ * time. On any failure (no key, HTTP error, timeout, malformed stream) the
+ * generator simply ends — the caller then falls back to its heuristic reply,
+ * exactly like `callLlm`. A hard timeout bounds the whole stream so a hung
+ * upstream can never hold a request open forever.
+ */
+export async function* streamLlm(opts: CallLlmOptions): AsyncGenerator<string, void, unknown> {
+  const cfg = resolveLlmConfig(opts.env)
+  const label = opts.label || 'llm'
+  if (!cfg.key) return
+
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 25000)
+  let produced = false
+  try {
+    const res = await fetch(chatCompletionsUrl(cfg.baseUrl), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${cfg.key}` },
+      body: JSON.stringify({
+        model: cfg.model,
+        temperature: opts.temperature ?? 0.4,
+        messages: opts.messages,
+        stream: true,
+      }),
+      cache: 'no-store',
+      signal: ctrl.signal,
+    })
+
+    if (!res.ok || !res.body) {
+      track(label, false, `HTTP ${res.status}`)
+      return
+    }
+
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (!trimmed || trimmed === 'data: [DONE]' || !trimmed.startsWith('data: ')) continue
+        try {
+          const json = JSON.parse(trimmed.slice(6))
+          const delta = json?.choices?.[0]?.delta?.content
+          if (delta) { produced = true; yield String(delta) }
+        } catch {
+          // ignore malformed SSE line
+        }
+      }
+    }
+    track(label, produced, produced ? undefined : 'empty stream')
+  } catch (e: any) {
+    track(label, false, e?.name === 'AbortError' || /abort|timeout/i.test(String(e?.message)) ? 'timeout' : String(e?.message || e))
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+/**
  * Call the model expecting a JSON object back.
  *
  * Models occasionally wrap JSON in prose or a ```json fence even when asked not
