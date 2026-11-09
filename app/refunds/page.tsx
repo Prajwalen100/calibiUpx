@@ -18,7 +18,7 @@ export default function RefundsPage() {
         <div className="mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition"
+            className="inline-flex min-h-[40px] items-center gap-1.5 py-2 text-xs font-bold text-slate-500 hover:text-indigo-600 transition"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Home
           </Link>
@@ -101,7 +101,7 @@ export default function RefundsPage() {
             </h2>
             <p>
               To file a cancellation, reset, or refund inquiry, email{' '}
-              <a href="mailto:support@calibiai.com" className="font-semibold text-indigo-600 hover:underline">
+              <a href="mailto:support@calibiai.com" className="inline-flex min-h-[32px] items-center font-semibold text-indigo-600 hover:underline">
                 support@calibiai.com
               </a>{' '}
               with your registered email address, assessment name, and a brief description of the issue. You can also reach our team via our official{' '}
@@ -109,7 +109,7 @@ export default function RefundsPage() {
                 href="https://www.instagram.com/calibiai/"
                 target="_blank"
                 rel="noreferrer"
-                className="font-semibold text-pink-600 hover:underline"
+                className="inline-flex min-h-[32px] items-center font-semibold text-pink-600 hover:underline"
               >
                 Instagram
               </a>{' '}
@@ -118,7 +118,7 @@ export default function RefundsPage() {
                 href="https://www.linkedin.com/company/calibiai-academy"
                 target="_blank"
                 rel="noreferrer"
-                className="font-semibold text-indigo-600 hover:underline"
+                className="inline-flex min-h-[32px] items-center font-semibold text-indigo-600 hover:underline"
               >
                 LinkedIn
               </a>{' '}

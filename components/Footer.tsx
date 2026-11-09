@@ -10,10 +10,10 @@ export function Footer() {
   return (
     <footer className="mt-20 border-t border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-slate-950/80 backdrop-blur-xl">
       {/* Upper footer band */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10 sm:pt-14 sm:pb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-x-4 gap-y-8 sm:gap-10">
           {/* Brand & Mission column */}
-          <div className="sm:col-span-2 lg:col-span-2 space-y-4">
+          <div className="col-span-2 lg:col-span-2 space-y-4">
             <Link href="/" className="inline-flex items-center gap-3.5 group select-none">
               <Logo size={46} className="transition-transform duration-200 group-hover:scale-105" />
               <div className="flex flex-col justify-center">
@@ -25,6 +25,24 @@ export function Footer() {
                 </span>
               </div>
             </Link>
+
+            {/* Partner attribution.
+                Premium product footers never bury this in the copyright
+                sentence — it sits in the brand column as its own small
+                lockup: a hairline rule, a tiny letterspaced "POWERED BY"
+                label, then the partner wordmark one step larger in the
+                display face. The label stays low-contrast so it reads as
+                provenance, and the wordmark carries the only colour, so the
+                eye lands on the name rather than the preposition. */}
+            <div className="pt-0.5">
+              <span aria-hidden className="block h-px w-9 bg-gradient-to-r from-slate-300 to-transparent dark:from-slate-700" />
+              <div className="mt-3 text-[9px] font-bold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">
+                Powered by
+              </div>
+              <div className="mt-1 font-display text-[17px] font-extrabold tracking-[-0.01em] text-slate-800 dark:text-slate-100">
+                MindLyft<span className="mindlyft-gradient ml-1.5">AI</span>
+              </div>
+            </div>
 
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm">
               The standardized employability credential for engineering graduates. Validating communication, algorithmic coding, AI debugging, and cognitive traits with tamper-proof reports.
@@ -83,7 +101,7 @@ export function Footer() {
             <div className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4 flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" /> Assessments
             </div>
-            <ul className="space-y-2.5 text-sm">
+            <ul className="space-y-0.5 text-sm sm:space-y-2.5">
               <li>
                 <Link href="/login" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium">
                   Calibi Assessment
@@ -117,7 +135,7 @@ export function Footer() {
             <div className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4 flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" /> Platform
             </div>
-            <ul className="space-y-2.5 text-sm">
+            <ul className="space-y-0.5 text-sm sm:space-y-2.5">
               <li>
                 <Link href="/dashboard/student" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium">
                   Student Dashboard
@@ -151,7 +169,7 @@ export function Footer() {
             <div className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4 flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> Legal &amp; Policies
             </div>
-            <ul className="space-y-2.5 text-sm">
+            <ul className="space-y-0.5 text-sm sm:space-y-2.5">
               <li>
                 <Link
                   href="/terms"
@@ -195,11 +213,6 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left text-sm sm:text-base text-slate-700 dark:text-slate-300">
             <span className="font-semibold text-slate-800 dark:text-slate-200">
               © {currentYear} CalibiUpX. All rights reserved.
-            </span>
-            <span className="hidden sm:inline text-slate-300 dark:text-slate-700">·</span>
-            <span className="font-semibold">
-              Powered by <span className="font-black text-slate-900 dark:text-white">MindLyft</span>{' '}
-              <span className="font-black text-indigo-600 dark:text-indigo-400">AI</span>
             </span>
           </div>
 

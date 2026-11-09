@@ -111,7 +111,7 @@ export function HeroMockup() {
         key={`bg-${cycle}`}
         viewBox="0 0 1000 640"
         aria-hidden
-        className="pointer-events-none absolute -inset-x-24 -top-16 -z-10 h-[130%] w-[calc(100%+12rem)] opacity-[.14] blur-[2px]"
+        className="pointer-events-none absolute inset-x-0 sm:-inset-x-24 -top-10 sm:-top-16 -z-10 h-[120%] sm:h-[130%] w-full sm:w-[calc(100%+12rem)] opacity-[.14] blur-[2px]"
       >
         <defs>
           <linearGradient id="bg-line" x1="0" y1="0" x2="1" y2="0">
@@ -138,7 +138,7 @@ export function HeroMockup() {
       </svg>
 
       {/* Soft glow behind the device */}
-      <div aria-hidden className="animate-glow absolute -inset-8 -z-10 rounded-[48px] bg-gradient-to-tr from-indigo-400/35 via-violet-400/25 to-fuchsia-300/35 blur-3xl" />
+      <div aria-hidden className="animate-glow absolute -inset-3 sm:-inset-8 -z-10 rounded-[48px] bg-gradient-to-tr from-indigo-400/35 via-violet-400/25 to-fuchsia-300/35 blur-3xl" />
 
       {/* Floating mini-cards */}
       <div aria-hidden className="absolute -left-6 top-8 z-20 hidden animate-float-slow lg:flex items-center gap-2 rounded-2xl border border-white/70 bg-white/80 dark:border-slate-700/80 dark:bg-slate-900/90 dark:shadow-indigo-950/50 px-3.5 py-2.5 shadow-xl shadow-indigo-200/50 backdrop-blur">

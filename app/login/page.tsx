@@ -338,7 +338,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-700"
+                  className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-lg text-slate-400 transition hover:text-slate-700 active:bg-slate-100 dark:active:bg-slate-800"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -377,7 +377,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => switchMode('signup')}
-                  className="font-bold text-indigo-600 hover:text-indigo-700"
+                  className="inline-flex min-h-[32px] items-center px-1 font-bold text-indigo-600 hover:text-indigo-700"
                 >
                   Create an account
                 </button>
@@ -388,7 +388,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => switchMode('signin')}
-                  className="font-bold text-indigo-600 hover:text-indigo-700"
+                  className="inline-flex min-h-[32px] items-center px-1 font-bold text-indigo-600 hover:text-indigo-700"
                 >
                   Sign in
                 </button>
@@ -399,7 +399,7 @@ export default function LoginPage() {
 
         <Link
           href="/"
-          className="mt-5 block text-center text-xs font-semibold text-slate-400 transition hover:text-slate-600"
+          className="mx-auto mt-4 flex min-h-[40px] w-fit items-center justify-center px-4 text-xs font-semibold text-slate-400 transition hover:text-slate-600"
         >
           ← Back to home
         </Link>

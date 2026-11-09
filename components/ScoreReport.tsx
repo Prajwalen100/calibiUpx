@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { useStore } from '@/lib/store'
+import { useIsMobile } from '@/lib/useIsMobile'
 import { isProfileComplete } from '@/lib/validate'
 import { SAMPLE_PROFILE, SAMPLE_USER } from '@/lib/sample'
 import {
@@ -12,6 +13,22 @@ import {
 
 const SECTION_COLORS = ['#6366f1', '#6366f1', '#8b5cf6', '#8b5cf6', '#ec4899', '#10b981']
 
+/**
+ * Radar axis label that wraps on spaces instead of running off the chart —
+ * "Learning Mindset" is wider than the gap between the hexagon and the card
+ * edge on a phone, so it gets stacked rather than clipped.
+ */
+function WrappedAxisTick({ x, y, payload, textAnchor, fontSize = 10 }: any) {
+  const words = String(payload?.value ?? '').split(' ')
+  return (
+    <text x={x} y={y} textAnchor={textAnchor} fill="#64748b" fontSize={fontSize}>
+      {words.map((w: string, i: number) => (
+        <tspan key={i} x={x} dy={i === 0 ? 0 : fontSize + 1}>{w}</tspan>
+      ))}
+    </text>
+  )
+}
+
 type Props = {
   scores: any
   /** Sample mode: use the bundled demo profile in the PDF and no localStorage reads. */
@@ -20,6 +37,7 @@ type Props = {
 
 export function ScoreReport({ scores, sample = false }: Props) {
   const { user, profile } = useStore()
+  const isMobile = useIsMobile()
   const [rendering, setRendering] = useState(false)
   // "Take the real assessment" must never bounce a signed-in user back to
   // /login — route them into the flow (or onboarding first).
@@ -77,18 +95,27 @@ export function ScoreReport({ scores, sample = false }: Props) {
               </div>
               <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">{scores.percentile}th percentile · {String(scores.verifiable_hash).slice(0, 24)}…</div>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              <button onClick={downloadPDF} disabled={rendering} className="btn-primary disabled:opacity-50">{rendering ? 'Rendering…' : '⬇ Download PDF report'}</button>
-              <a href={startHref} className="btn-soft">{sample ? 'Take the real assessment →' : 'My dashboard →'}</a>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+              <button onClick={downloadPDF} disabled={rendering} className="btn-primary w-full sm:w-auto disabled:opacity-50">{rendering ? 'Rendering…' : '⬇ Download PDF report'}</button>
+              <a href={startHref} className="btn-soft w-full sm:w-auto">{sample ? 'Take the real assessment →' : 'My dashboard →'}</a>
             </div>
           </div>
 
-          <div className="mt-7 h-64">
+          <div className="mt-7 h-72 sm:h-64">
             <div className="text-sm font-bold text-slate-700 mb-2">Section performance (% of max)</div>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={sectionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} interval={0} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
-                <YAxis domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} unit="%" />
+              <BarChart data={sectionData} margin={{ top: 10, right: 6, left: isMobile ? 0 : -22, bottom: isMobile ? 18 : 0 }}>
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: '#64748b', fontSize: isMobile ? 9.5 : 11 }}
+                  interval={0}
+                  angle={isMobile ? -38 : 0}
+                  textAnchor={isMobile ? 'end' : 'middle'}
+                  height={isMobile ? 52 : 30}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                  tickLine={false}
+                />
+                <YAxis domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: isMobile ? 9.5 : 11 }} width={isMobile ? 26 : 60} axisLine={false} tickLine={false} unit={isMobile ? undefined : '%'} />
                 <Tooltip cursor={{ fill: 'rgba(99,102,241,0.06)' }} contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, fontSize: 12, boxShadow: '0 8px 24px -8px rgba(0,0,0,.2)' }}
                   formatter={(v: any, _n: any, p: any) => [`${v}% (${p.payload.score}/${p.payload.max})`, 'Score']} />
                 <Bar dataKey="pct" radius={[8, 8, 0, 0]} maxBarSize={56}>
@@ -103,12 +130,12 @@ export function ScoreReport({ scores, sample = false }: Props) {
           {/* Radar */}
           <div className="glass-card animate-fade-up" style={{ animationDelay: '.05s' }}>
             <div className="text-sm font-bold text-slate-800">Behavioural profile</div>
-            <div className="mt-2 h-72">
+            <div className="mt-2 h-64 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={behavioral} outerRadius="72%">
+                <RadarChart data={behavioral} outerRadius={isMobile ? '56%' : '72%'} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                   <PolarGrid stroke="#e2e8f0" />
-                  <PolarAngleAxis dataKey="trait" tick={{ fill: '#475569', fontSize: 10.5 }} />
-                  <PolarRadiusAxis domain={[0, 100]} tick={{ fill: '#cbd5e1', fontSize: 9 }} axisLine={false} />
+                  <PolarAngleAxis dataKey="trait" tick={<WrappedAxisTick fontSize={isMobile ? 9.5 : 10.5} />} />
+                  <PolarRadiusAxis domain={[0, 100]} tick={isMobile ? false : { fill: '#cbd5e1', fontSize: 9 }} axisLine={false} />
                   <Radar name="Score" dataKey="score" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.35} />
                   <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, fontSize: 12 }} />
                 </RadarChart>

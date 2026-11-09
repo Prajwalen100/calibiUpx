@@ -1401,7 +1401,7 @@ export async function generateSingleReportPdf({ scores, profile = {}, user = {},
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(6)
     doc.setTextColor(...MUT)
-    doc.text('Verified Employability Assessment · calibiai.com', ML + 7.5, 295.2)
+    doc.text('Verified Employability Assessment · calibiupx.com', ML + 7.5, 295.2)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(6.4)
     doc.setTextColor(...MUT)

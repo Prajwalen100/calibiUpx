@@ -1,127 +1,108 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
-import { Star, Quote, ChevronLeft, ChevronRight, GraduationCap } from 'lucide-react'
+import { Briefcase, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
 
-/** Auto-advance cadence — one student story every 5 seconds. */
-const SLIDE_MS = 5000
+/** Auto-advance cadence — one story every 7 seconds (quotes need reading time). */
+const SLIDE_MS = 7000
 
-export interface Testimonial {
+/**
+ * A real, named student from the college placement list.
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ THE `quote` FIELDS BELOW ARE UNAPPROVED DRAFTS.                         │
+ * │                                                                         │
+ * │ Name, company and photo come from Placement_List.pdf and the students'  │
+ * │ own files — those are facts. The quotes are NOT: nobody said them yet.  │
+ * │ A quote printed beside a real person's face and name is a public        │
+ * │ statement by that person, so before this ships each student must read   │
+ * │ their own line and approve or rewrite it. Replace the text with what    │
+ * │ they actually send back and delete this notice.                         │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ */
+export interface Placement {
   name: string
-  yearRole: string
+  /** Employer exactly as the placement list records it. */
+  company: string | null
+  /** DRAFT until the named student approves it. See the notice above. */
   quote: string
-  score: string
-  tier: string
-  outcome: string
-  stars: number
   photoUrl: string
 }
 
-const TESTIMONIALS: Testimonial[] = [
+const PLACEMENTS: Placement[] = [
   {
-    name: 'Rohan Deshmukh',
-    yearRole: '3rd Year Student · Computer Science',
+    name: 'Mrunmayee Pusadkar',
+    company: 'Tech Mahindra',
     quote:
-      'The tests are completely up to the mark — every question from AI debugging to algorithmic coding felt like a real technical interview. Taking repeated mocks on CalibiUpX helped me uncover critical gaps in my problem solving and build genuine speed.',
-    score: '784 / 1000',
-    tier: 'Gold Tier',
-    outcome: 'SDE Shortlist 2026',
-    stars: 5,
-    photoUrl: '/testimonials/rohan-deshmukh.jpg',
+      'The sectional timers were what changed things for me. In my first few mocks I kept spending too long on quantitative aptitude and ran out of time before the verbal section — CalibiUpX showed me that split after every attempt, so I learned to pace myself. By the actual drive, finishing within the limit had stopped being the hard part.',
+    photoUrl: '/students/mrunmayee-pusadkar.jpg',
   },
   {
-    name: 'Ananya Sharma',
-    yearRole: '4th Year Student · Information Technology',
+    name: 'Vallabh Padhye',
+    company: 'ZS Solution',
     quote:
-      'I was really anxious before our placement season, but the timed proctored mocks gave me the exact feel of actual MNC hiring tests. The verified CalibiUpX report on my resume gave recruiters instant proof of my skills — walked in confident and got placed!',
-    score: '812 / 1000',
-    tier: 'Platinum Tier',
-    outcome: 'Campus Placement Cleared',
-    stars: 5,
-    photoUrl: '/testimonials/ananya-sharma.jpg',
+      'I used the platform mostly for structured problem solving. The section-wise report after each attempt told me exactly which question types I was losing marks on instead of just giving me a total, so my practice stopped being random. Working through those weak areas week by week is what got me interview-ready.',
+    photoUrl: '/students/vallabh-padhye.jpg',
   },
   {
-    name: 'Aditya Verma',
-    yearRole: '3rd Year Student · AI & Data Engineering',
+    name: 'Surita Sahu',
+    company: 'Tech Mahindra',
     quote:
-      'Unlike generic quiz portals, CalibiUpX tests real AI debugging and edge-case validation. The automated code evaluation against hidden test suites made a dramatic difference in how I approach technical coding rounds under time pressure.',
-    score: '746 / 1000',
-    tier: 'Gold Tier',
-    outcome: 'AI Engineering Intern',
-    stars: 5,
-    photoUrl: '/testimonials/aditya-verma.jpg',
+      'Communication was the part I was least confident about. The English section and the AI feedback on my written answers pointed out the habits I could not see myself — unclear structure, filler phrasing — and gave me something specific to fix each time rather than a vague score.',
+    photoUrl: '/students/surita-sahu.jpg',
   },
   {
-    name: 'Sneha Kulkarni',
-    yearRole: '4th Year Student · Computer Engineering',
+    name: 'Siddhansh Dubey',
+    company: 'TwoPiR',
     quote:
-      'The 50+ company-specific pattern mocks are spot on. Practicing the Capgemini and TCS hiring mocks gave me immense clarity on sectional cutoffs and time management. It really helped me clear the actual drive with zero surprises.',
-    score: '798 / 1000',
-    tier: 'Gold Tier',
-    outcome: '3 Internship Offers',
-    stars: 5,
-    photoUrl: '/testimonials/sneha-kulkarni.jpg',
+      'Running my code against hidden test cases was the most useful part. My solutions used to pass the obvious inputs and break on edge cases, and the platform caught that every single time. I started writing code that handled the boundaries first, which is exactly what the coding round tested.',
+    photoUrl: '/students/siddhansh-dubey.jpg',
   },
   {
-    name: 'Tanmay Joshi',
-    yearRole: '3rd Year Student · Software Engineering',
+    name: 'Angiras Kathalkar',
+    company: null,
     quote:
-      'Watching my score climb week after week in the dashboard tracker kept me motivated every single day. The questions are challenging, the feedback is detailed, and the verified credentials can be sent directly to HR with a single click.',
-    score: '762 / 1000',
-    tier: 'Gold Tier',
-    outcome: 'Silver → Gold in 4 Weeks',
-    stars: 5,
-    photoUrl: '/testimonials/tanmay-joshi.jpg',
+      'The AI debugging and prompt engineering sections were unlike anything else I had practised. Most portals only ask theory, but here I had to actually find the bug and justify the fix. That is the part interviewers kept digging into, and I had already rehearsed explaining my reasoning out loud.',
+    photoUrl: '/students/angiras-kathalkar.jpg',
   },
   {
-    name: 'Priya Patel',
-    yearRole: '4th Year Student · Information Technology',
+    name: 'Dhananjay Solanki',
+    company: 'EY',
     quote:
-      'Having an objective, verified 1000-point credential made a noticeable difference during interviews. The panel spent the first five minutes asking about my CalibiUpX section breakdown instead of generic intro questions.',
-    score: '825 / 1000',
-    tier: 'Platinum Tier',
-    outcome: 'Top Tier Tech Offer',
-    stars: 5,
-    photoUrl: '/testimonials/priya-patel.jpg',
+      'Taking full-length proctored mocks took the nerves out of the real thing. Sitting a timed, full-screen test repeatedly made the actual assessment day feel routine, and the progress tracker kept me honest about whether I was genuinely improving or just putting in hours.',
+    photoUrl: '/students/dhananjay-solanki.jpg',
   },
   {
-    name: 'Mihir Patil',
-    yearRole: '3rd Year Student · Computer Engineering',
+    name: 'Atharv Thakre',
+    company: 'Cognizant',
     quote:
-      'The mock test experience was genuinely up to the mark. Same test duration, same pressure as a real placement round. After completing multiple assessments, the actual company drive felt like just another practice test.',
-    score: '755 / 1000',
-    tier: 'Gold Tier',
-    outcome: 'Full Stack Shortlist',
-    stars: 5,
-    photoUrl: '/testimonials/mihir-patil.jpg',
+      'Practising the company-specific mock meant I walked in already knowing the round order and the time limit for each section. There were no surprises on test day — I knew what was coming and could spend my attention on the questions instead of figuring out the format.',
+    photoUrl: '/students/atharv-thakre.jpg',
   },
   {
-    name: 'Siddhi Jagtap',
-    yearRole: '4th Year Student · Computer Science',
+    name: 'Vaishnavi Ingale',
+    company: 'Cognizant',
     quote:
-      'The combination of technical problem solving, cognitive speed, and spoken English evaluation mirrors modern tech hiring better than any platform I have seen. 805/1000 helped me stand out in a batch of 500+ candidates.',
-    score: '805 / 1000',
-    tier: 'Platinum Tier',
-    outcome: 'Pre-Placement Offer (PPO)',
-    stars: 5,
-    photoUrl: '/testimonials/siddhi-jagtap.jpg',
+      'Pseudocode and the technical fundamentals were where I needed the most work. The detailed report showed me that my logical reasoning was fine and my CS fundamentals were not, so I knew exactly where to put my revision time in the weeks before the drive.',
+    photoUrl: '/students/vaishnavi-ingale.jpg',
   },
 ]
 
-function RealStudentPhoto({
+/** Student portrait, falling back to initials if the image ever 404s. */
+function StudentPhoto({
   name,
   src,
-  size = 92,
+  size = 96,
   className = '',
 }: {
   name: string
-  src: string
+  src?: string
   size?: number
   className?: string
 }) {
   const [failed, setFailed] = useState(false)
   const initials = name
     .split(' ')
-    .map(p => p[0])
+    .map((p) => p[0])
     .filter(Boolean)
     .slice(0, 2)
     .join('')
@@ -142,14 +123,14 @@ function RealStudentPhoto({
   return (
     <img
       src={src}
-      alt={name}
+      alt={`${name}, placed student`}
       width={size}
       height={size}
       onError={() => setFailed(true)}
       loading="lazy"
       decoding="async"
       style={{ width: size, height: size }}
-      className={`rounded-full object-cover object-top shadow-md ${className}`}
+      className={`rounded-full object-cover object-center shadow-md ${className}`}
     />
   )
 }
@@ -157,12 +138,11 @@ function RealStudentPhoto({
 export function StudentTestimonials() {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
-  const count = TESTIMONIALS.length
+  const count = PLACEMENTS.length
 
-  // Reset the 5-second window whenever the active slide changes
   useEffect(() => {
     if (paused) return
-    const id = window.setInterval(() => setActive(a => (a + 1) % count), SLIDE_MS)
+    const id = window.setInterval(() => setActive((a) => (a + 1) % count), SLIDE_MS)
     return () => window.clearInterval(id)
   }, [paused, active, count])
 
@@ -172,30 +152,24 @@ export function StudentTestimonials() {
     <div
       role="region"
       aria-roledescription="carousel"
-      aria-label="Student reviews"
+      aria-label="Student stories"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      {/* Header */}
+      {/* Header — the badge states what the data actually shows, nothing more */}
       <div className="text-center">
-        {/* Trusted Batch / Rating Badge */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-indigo-50/80 dark:bg-indigo-950/70 px-3.5 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300 shadow-2xs mb-3">
-          <span className="flex text-amber-400">★★★★★</span>
-          <span className="font-extrabold text-slate-900 dark:text-white">4.9 / 5.0</span>
-          <span className="text-slate-300 dark:text-slate-600">·</span>
-          <span>Trusted by 5,000+ Students</span>
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-indigo-200/80 bg-indigo-50/80 px-3.5 py-1 text-xs font-bold text-indigo-700 shadow-2xs dark:border-indigo-800/80 dark:bg-indigo-950/70 dark:text-indigo-300">
+          <Quote className="h-3.5 w-3.5" aria-hidden />
+          <span>{count} student stories</span>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+        <h2 className="text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">
           Scores that <span className="text-gradient">open doors.</span>
         </h2>
-        <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-          How 3rd and 4th year engineering students benchmark their placement readiness with CalibiUpX.
-        </p>
-        <p className="mt-2 text-[11px] font-medium text-slate-400 dark:text-slate-500">
-          Illustrative examples. Photos are representative stock imagery, not specific individuals.
+        <p className="mx-auto mt-1.5 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
+          How students used CalibiUpX to get ready — in their own words.
         </p>
       </div>
 
@@ -206,78 +180,64 @@ export function StudentTestimonials() {
             className="testimonial-track flex transition-transform duration-500 ease-out"
             style={{ transform: `translateX(-${active * 100}%)` }}
           >
-            {TESTIMONIALS.map((t, i) => {
+            {PLACEMENTS.map((p, i) => {
               const isActive = i === active
               return (
                 <div
-                  key={t.name}
+                  key={p.name}
                   role="group"
                   aria-roledescription="slide"
-                  aria-label={`Review ${i + 1} of ${count}: ${t.name}`}
+                  aria-label={`Placement ${i + 1} of ${count}: ${p.name}`}
                   aria-hidden={!isActive}
                   className="w-full shrink-0 px-0.5"
                 >
-                  <div className="glass-card !p-6 sm:!p-8">
-                    <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start">
-                      {/* Student portrait (representative stock imagery) */}
+                  <div className="glass-card relative overflow-hidden !p-6 sm:!p-10">
+                    <div className="relative flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:gap-8 sm:text-left">
+                      {/* Portrait */}
                       <div className={`relative shrink-0 ${isActive ? 'animate-fade-up' : ''}`}>
-                        <span aria-hidden className="absolute -inset-2.5 rounded-full calibiai-gradient opacity-25 blur-lg animate-glow" />
-                        <div className="relative rounded-full p-[3px] calibiai-gradient shadow-lg">
-                          <div className="rounded-full bg-white dark:bg-slate-900 p-1">
-                            <RealStudentPhoto
-                              name={t.name}
-                              src={t.photoUrl}
-                              size={96}
-                              className="block"
-                            />
+                        <span
+                          aria-hidden
+                          className="calibiai-gradient animate-glow absolute -inset-2.5 rounded-full opacity-25 blur-lg"
+                        />
+                        <div className="calibiai-gradient relative rounded-full p-[3px] shadow-lg">
+                          <div className="rounded-full bg-white p-1 dark:bg-slate-900">
+                            <StudentPhoto name={p.name} src={p.photoUrl} size={104} className="block" />
                           </div>
                         </div>
                       </div>
 
-                      {/* Review details */}
+                      {/* Story */}
                       <div
-                        className={`min-w-0 w-full text-center sm:text-left ${isActive ? 'animate-fade-up' : ''}`}
+                        className={`relative w-full min-w-0 ${isActive ? 'animate-fade-up' : ''}`}
                         style={isActive ? { animationDelay: '90ms' } : undefined}
                       >
-                        <div className="flex items-center justify-center sm:justify-start gap-1" aria-label={`${t.stars} out of 5 stars`}>
-                          {Array.from({ length: 5 }).map((_, s) => (
-                            <Star
-                              key={s}
-                              className={`h-4 w-4 ${s < t.stars ? 'fill-amber-400 text-amber-400' : 'text-slate-200 dark:text-slate-700'}`}
-                              aria-hidden
-                            />
-                          ))}
-                        </div>
+                        {/* Oversized typographic quote mark — the premium cue.
+                            Anchored to the text column so it leads the quote
+                            rather than sitting behind the portrait. */}
+                        <span
+                          aria-hidden
+                          className="pointer-events-none absolute -left-4 -top-16 hidden select-none font-serif text-[10rem] leading-none text-indigo-500/[0.13] dark:text-indigo-400/[0.16] sm:block"
+                        >
+                          &ldquo;
+                        </span>
 
-                        <div className="relative mt-3">
-                          <Quote className="absolute -left-1 -top-2 h-7 w-7 text-indigo-100 dark:text-indigo-900/40" aria-hidden />
-                          <blockquote className="relative pl-8 text-[15px] sm:text-base leading-relaxed text-slate-700 dark:text-slate-200">
-                            {t.quote}
-                          </blockquote>
-                        </div>
+                        <blockquote className="relative text-[15px] leading-relaxed text-slate-700 dark:text-slate-200 sm:text-[17px] sm:leading-[1.75]">
+                          &ldquo;{p.quote}&rdquo;
+                        </blockquote>
 
-                        <div className="mt-4">
-                          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-                            <span className="font-black text-slate-900 dark:text-white text-base">{t.name}</span>
+                        {/* Attribution, set off by a rule so it reads as a
+                            signature rather than another sentence. */}
+                        <figcaption className="mt-5 border-t border-slate-200/80 pt-4 dark:border-slate-700/60">
+                          <div className="text-base font-black tracking-tight text-slate-900 dark:text-white sm:text-lg">
+                            {p.name}
                           </div>
-
-                          <div className="mt-1 flex items-center justify-center sm:justify-start gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">
-                            <GraduationCap className="h-4 w-4 shrink-0 text-indigo-500 dark:text-indigo-400" aria-hidden />
-                            <span>{t.yearRole}</span>
-                          </div>
-
-                          <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                            <span className="chip !bg-emerald-50 dark:!bg-emerald-950/70 !text-emerald-700 dark:!text-emerald-300 !border-emerald-200 dark:!border-emerald-800/60 font-bold">
-                              {t.score}
-                            </span>
-                            <span className="chip !bg-amber-50 dark:!bg-amber-950/70 !text-amber-700 dark:!text-amber-300 !border-amber-200 dark:!border-amber-800/60 font-bold">
-                              {t.tier}
-                            </span>
-                            <span className="chip !bg-indigo-50 dark:!bg-indigo-950/70 !text-indigo-700 dark:!text-indigo-300 !border-indigo-200 dark:!border-indigo-800/60 font-bold">
-                              {t.outcome}
-                            </span>
-                          </div>
-                        </div>
+                          {p.company && (
+                            <div className="mt-1 flex items-center justify-center gap-1.5 text-sm font-semibold text-slate-500 dark:text-slate-400 sm:justify-start">
+                              <Briefcase className="h-3.5 w-3.5 shrink-0 text-indigo-500 dark:text-indigo-400" aria-hidden />
+                              <span>{p.company}</span>
+                            </div>
+                          )}
+                        </figcaption>
                       </div>
                     </div>
                   </div>
@@ -291,59 +251,54 @@ export function StudentTestimonials() {
         <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-slate-800">
           <div
             key={active}
-            className={`testimonial-progress h-full rounded-full calibiai-gradient ${paused ? 'is-paused' : ''}`}
+            className={`testimonial-progress calibiai-gradient h-full rounded-full ${paused ? 'is-paused' : ''}`}
             aria-hidden
           />
         </div>
 
-        {/* Controls — Prev/Next arrows + Real Indian Student Photo selector row */}
-        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 shrink-0">
+        {/* Controls */}
+        <div className="mt-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="flex shrink-0 items-center gap-2">
             <button
               onClick={() => go(active - 1)}
-              aria-label="Previous review"
-              className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-850 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 shadow-sm transition hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-95"
+              aria-label="Previous student"
+              className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white/80 text-slate-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 active:scale-95 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:border-indigo-500 dark:hover:bg-slate-700 dark:hover:text-indigo-300"
             >
               <ChevronLeft className="h-5 w-5" aria-hidden />
             </button>
             <button
               onClick={() => go(active + 1)}
-              aria-label="Next review"
-              className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-850 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 shadow-sm transition hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-95"
+              aria-label="Next student"
+              className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white/80 text-slate-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 active:scale-95 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:border-indigo-500 dark:hover:bg-slate-700 dark:hover:text-indigo-300"
             >
               <ChevronRight className="h-5 w-5" aria-hidden />
             </button>
           </div>
 
-          {/* Real Photo Thumbnail selector */}
+          {/* Thumbnail selector */}
           <div
-            className="flex flex-wrap items-center justify-center gap-2"
+            className="flex items-center justify-start gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-visible [&::-webkit-scrollbar]:hidden"
             role="tablist"
-            aria-label="Choose review"
+            aria-label="Choose student"
           >
-            {TESTIMONIALS.map((t, i) => {
+            {PLACEMENTS.map((p, i) => {
               const isActive = i === active
               return (
                 <button
-                  key={t.name}
+                  key={p.name}
                   role="tab"
                   aria-selected={isActive}
-                  aria-label={`Show review from ${t.name}`}
-                  title={`${t.name} (${t.yearRole})`}
+                  aria-label={`Show ${p.name}`}
+                  title={p.company ? `${p.name} — ${p.company}` : p.name}
                   onClick={() => go(i)}
-                  className={`rounded-full transition-all duration-300 ${
+                  className={`grid min-h-[36px] min-w-[36px] shrink-0 place-items-center rounded-full transition-all duration-300 ${
                     isActive
-                      ? 'scale-110 p-[2px] calibiai-gradient shadow-md shadow-indigo-300 dark:shadow-indigo-950 ring-2 ring-indigo-400 dark:ring-indigo-500'
-                      : 'p-px bg-slate-200 dark:bg-slate-700 opacity-60 hover:opacity-100 hover:scale-105'
+                      ? 'calibiai-gradient scale-110 p-[2px] shadow-md shadow-indigo-300 ring-2 ring-indigo-400 dark:shadow-indigo-950 dark:ring-indigo-500'
+                      : 'bg-slate-200 p-px opacity-60 hover:scale-105 hover:opacity-100 dark:bg-slate-700'
                   }`}
                 >
-                  <span className="block rounded-full bg-white dark:bg-slate-900 p-[1px]">
-                    <RealStudentPhoto
-                      name={t.name}
-                      src={t.photoUrl}
-                      size={34}
-                      className="block"
-                    />
+                  <span className="block rounded-full bg-white p-[1px] dark:bg-slate-900">
+                    <StudentPhoto name={p.name} src={p.photoUrl} size={34} className="block" />
                   </span>
                 </button>
               )

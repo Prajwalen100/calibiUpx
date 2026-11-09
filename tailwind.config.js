@@ -8,6 +8,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        // small-phone breakpoint: iPhone SE / Galaxy S are 360-375px wide
+        xs: '400px',
+      },
       colors: {
         calibiai: {
           50: '#f0f9ff',
@@ -24,6 +28,10 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
+        // Display face for wordmarks and partner lockups. A class beats the
+        // global `* { font-family: Inter }` rule on specificity, so this works
+        // without !important.
+        display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       }
     },
   },

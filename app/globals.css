@@ -11,7 +11,42 @@
   --ring-track: rgba(226, 232, 240, 0.4);
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* `clip` (not `hidden`) kills sideways scroll without breaking position: sticky */
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body { overflow-x: clip; }
+
+/* Nothing decorative should ever widen the page on a phone */
+img, svg, video, canvas { max-width: 100%; }
+
+/* iOS zooms the whole page in when a focused input is under 16px. Bumping the
+   font size only on phones keeps the desktop type scale untouched. */
+@media (max-width: 639px) {
+  input, select, textarea, .field { font-size: 16px; }
+}
+
+/* Touch ergonomics — on a touch screen every link in the dense footer /
+   legal rows gets a finger-sized hit area. Pointer-driven devices are
+   untouched, so the desktop layout keeps its tight rhythm. */
+@media (max-width: 1023px), (pointer: coarse) {
+  footer a:not(.btn-primary):not(.btn-soft),
+  footer button:not(.btn-primary):not(.btn-soft) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
+
+/* Long unbroken strings (hashes, emails, URLs) must never force a sideways
+   scroll on a narrow screen. */
+@media (max-width: 639px) {
+  h1, h2, h3, h4, p, li, td, th, span { overflow-wrap: anywhere; }
+}
 
 body {
   background:
@@ -88,6 +123,17 @@ body {
   /* Gradient text */
   .text-gradient {
     @apply bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-500 bg-clip-text text-transparent;
+  }
+
+  /* MindLyft AI partner accent — violet -> fuchsia.
+     Kept distinct from .upx-gradient on purpose: a partner wordmark rendered
+     in the host brand's own gradient reads as one brand, not two. Swap these
+     two stops for MindLyft's real brand colours when they are available. */
+  .mindlyft-gradient {
+    background: linear-gradient(135deg, #7C3AED 0%, #A855F7 45%, #D946EF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   /* CalibiUpX brand theme gradient: vivid cyan -> electric blue -> royal purple */

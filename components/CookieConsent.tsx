@@ -44,7 +44,7 @@ export default function CookieConsent() {
     <div
       role="region"
       aria-label="Cookie consent banner"
-      className="fixed bottom-4 left-4 right-4 z-40 mx-auto max-w-4xl animate-fade-up rounded-2xl border border-slate-200/80 bg-white/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/95 transition-all duration-300"
+      className="fixed bottom-2 left-2 right-2 z-40 mx-auto max-h-[70vh] max-w-4xl overflow-y-auto animate-fade-up rounded-2xl border border-slate-200/80 bg-white/95 p-3.5 shadow-2xl backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/95 transition-all duration-300 sm:bottom-4 sm:left-4 sm:right-4 sm:p-5"
     >
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1 md:max-w-xl">
@@ -81,11 +81,11 @@ export default function CookieConsent() {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+        <div className="grid grid-cols-2 items-center gap-2 sm:flex sm:flex-wrap sm:shrink-0">
           {showPreferences ? (
             <button
               onClick={handleSavePreferences}
-              className="btn-primary !py-2 !px-4 !text-xs font-bold"
+              className="btn-primary col-span-2 min-h-[40px] !py-2 !px-4 !text-xs font-bold"
             >
               Save Preferences
             </button>
@@ -93,19 +93,19 @@ export default function CookieConsent() {
             <>
               <button
                 onClick={handleAcceptAll}
-                className="btn-primary !py-2 !px-4 !text-xs font-bold"
+                className="btn-primary min-h-[40px] !py-2 !px-4 !text-xs font-bold"
               >
                 Accept All
               </button>
               <button
                 onClick={handleEssentialOnly}
-                className="btn-secondary !py-2 !px-4 !text-xs font-medium"
+                className="btn-secondary min-h-[40px] !py-2 !px-4 !text-xs font-medium"
               >
                 Essential Only
               </button>
               <button
                 onClick={() => setShowPreferences(true)}
-                className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 underline ml-1"
+                className="col-span-2 inline-flex min-h-[40px] items-center justify-center px-2 text-xs font-medium text-slate-500 underline hover:text-slate-800 dark:hover:text-slate-200 sm:col-auto sm:ml-1"
               >
                 Customize
               </button>
