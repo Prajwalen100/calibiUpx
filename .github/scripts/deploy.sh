@@ -176,6 +176,41 @@ else
       kill -9 "$OLD_PID" 2>/dev/null || true
     fi
   fi
+  # The pidfile only knows about instances THIS script started. An instance
+  # started by the hosting panel, or by a deploy that ran before the pidfile
+  # existed, is invisible to it - and that is exactly what broke production:
+  # `npm run build` replaced .next/ and public/ underneath a live process that
+  # was never restarted, so it kept serving its old HTML while the asset
+  # hashes and image files that HTML referenced had been deleted from disk.
+  # The symptom is a page that loads but is completely unstyled, with 500s on
+  # /_next/static/css/<old-hash>.css.
+  #
+  # So reclaim the port directly, scoped by working directory: a process is
+  # only killed when its cwd IS this deployment. A neighbouring app on the
+  # same account has a different cwd and is left strictly alone, even if it
+  # somehow sits on the same port.
+  reclaim_port() {
+    local port="$1" pid cwd want
+    want="$(readlink -f "$DEPLOY_PATH" 2>/dev/null || echo "$DEPLOY_PATH")"
+    for pid in $(ss -lptnH "sport = :$port" 2>/dev/null \
+                 | grep -o 'pid=[0-9]*' | cut -d= -f2 | sort -u); do
+      [ -n "$pid" ] || continue
+      cwd="$(readlink -f "/proc/$pid/cwd" 2>/dev/null || true)"
+      if [ -n "$cwd" ] && [ "$cwd" = "$want" ]; then
+        echo "Port $port held by a stale instance of this app (pid $pid) - stopping it"
+        kill "$pid" 2>/dev/null || true
+        sleep 3
+        kill -9 "$pid" 2>/dev/null || true
+      else
+        echo "WARNING: port $port is held by pid $pid (cwd ${cwd:-unknown}), which is"
+        echo "         NOT this deployment. Leaving it alone - it may be another app."
+        echo "         If this domain is meant to be served from port $port, that"
+        echo "         process is serving stale files and must be restarted by hand."
+      fi
+    done
+  }
+  reclaim_port "$PORT"
+
   echo "Starting app on port $PORT"
   nohup npm start > logs/app.log 2>&1 &
   echo $! > tmp/app.pid
