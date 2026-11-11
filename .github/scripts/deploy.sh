@@ -98,15 +98,44 @@ else
   echo "WARNING: no .env at $DEPLOY_PATH/.env - building in demo mode."
 fi
 
-# 4) Keep the tracked demo seed clean so checkout can never abort. Live demo
-#    rows belong in calibiai_db.runtime.json (gitignored).
+# 4) Preserve the live demo rows before the tree is reset. calibiai_db.json is
+#    only the seed that ships in git; the rows this deployment accumulated
+#    belong in calibiai_db.runtime.json, which is gitignored and so survives
+#    everything below.
 if [ -f calibiai_db.json ] && [ ! -f calibiai_db.runtime.json ]; then
   cp -f calibiai_db.json calibiai_db.runtime.json || true
 fi
-git checkout -- calibiai_db.json 2>/dev/null || true
 
-git "${GIT_CRED[@]}" fetch origin
+# 4b) Sync the checkout to the branch.
+#
+#     `git checkout -B` REFUSES to switch when a tracked file has local
+#     modifications that the incoming commit also touches, and takes the whole
+#     deploy down with it:
+#
+#       error: Your local changes to the following files would be overwritten
+#              by checkout:  next-env.d.ts
+#       Aborting
+#
+#     That is structural here, not bad luck. `npm run build` (step 5) makes
+#     Next REGENERATE tracked files - next-env.d.ts is rewritten on every
+#     build - so this checkout is guaranteed to be dirty from the second
+#     deploy onwards. It stayed quiet only while incoming commits happened not
+#     to touch the same files; the moment one did, every later deploy aborted.
+#     The old `git checkout -- calibiai_db.json` line treated one known file
+#     the same way, which is whack-a-mole: it cannot know the next filename.
+#
+#     A deploy target is a disposable mirror of the branch, not a working copy
+#     with opinions, so discard local state unconditionally. `reset --hard`
+#     never refuses. It is run BEFORE the branch switch so the switch itself
+#     always has a clean tree to work with.
+#
+#     Only tracked files are touched. Ignored files - .env, .next,
+#     node_modules, calibiai_db.runtime.json - are left alone, because there
+#     is deliberately no `git clean -x` here.
+git "${GIT_CRED[@]}" fetch --prune origin
+git reset --hard "origin/$BRANCH"
 git checkout -B "$BRANCH" "origin/$BRANCH"
+echo "checkout synced to $(git rev-parse --short HEAD) on $BRANCH"
 # Token no longer needed - drop it now rather than waiting for the EXIT trap,
 # so it is absent from disk during the long build.
 rm -f "$CRED_FILE"
